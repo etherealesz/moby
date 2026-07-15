@@ -1,0 +1,14 @@
+application:
+  name: TrashNav Production
+  version: 0.0.1
+  debug: false
+database:
+  master:
+    host: 35.187.244.239
+    port: 5432
+    user: postgres
+    password: d3v3l0p8015
+    name: template_be
+logging:
+  level: info
+timezone: Asia/Jakarta
