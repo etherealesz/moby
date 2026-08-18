@@ -1,0 +1,1 @@
+export const DEFAULT_PAGINATION_PAGE_SIZE = 20;

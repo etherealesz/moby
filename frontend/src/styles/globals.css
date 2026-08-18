@@ -1,0 +1,28 @@
+@import 'leaflet/dist/leaflet.css';
+
+@layer theme, base, mantine, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+@import '@mantine/core/styles.css';
+@import '@mantine/notifications/styles.css';
+@import '@mantine/dates/styles.css';
+@import './theme.css';
+
+/* Ensure Leaflet container fills 100% and tiles render smoothly */
+.leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  z-index: 1;
+  background-color: #f4fbfb;
+}
+
+.leaflet-pane {
+  z-index: 400;
+}
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 500;
+}

@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+
+WORKDIR=/app
+NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
+
+bun $WORKDIR/${NAMESPACE}-server.js

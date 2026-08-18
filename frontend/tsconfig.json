@@ -1,0 +1,58 @@
+{
+  "compilerOptions": {
+    "types": [
+      "node",
+      "jest",
+      "@testing-library/jest-dom"
+    ],
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "paths": {
+      "@/*": [
+        "./*",
+        "./src/*"
+      ]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".storybook/main.ts",
+    ".storybook/preview.tsx",
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "./dist/production/types/**/*.ts",
+    "./dist/production/dev/types/**/*.ts",
+    "./dist/local/types/**/*.ts",
+    "./dist/local/dev/types/**/*.ts",
+    "prettier.config.mjs",
+    "./dist/development/types/**/*.ts",
+    "./dist/development/dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "scripts"
+  ]
+}
