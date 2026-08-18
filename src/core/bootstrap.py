@@ -2,11 +2,9 @@ import logging
 
 from injector import Injector
 
-from core.config.settings import ENVIRONMENT, settings
+from core.config.settings import settings
 from core.logger.setup import setup_logger
 from infrastructures.databases.master import DatabaseMasterEngine
-from infrastructures.http.izmo_auth.client import IzmoAuthAPIHTTPClient
-from infrastructures.sentry.setup import setup_sentry
 from infrastructures.task_launcher.base import TaskLauncher
 
 _bootstrapped = False
@@ -25,14 +23,12 @@ def bootstrap_runtime() -> None:
     logger = logging.getLogger()
 
     import sys
+
     if sys.platform == "win32":
         import asyncio
+
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
         logger.info("Set event loop policy to WindowsSelectorEventLoopPolicy")
-
-    if ENVIRONMENT == "production":
-        setup_sentry()
-        logger.info("Sentry initialized")
 
     _bootstrapped = True
 
@@ -44,8 +40,6 @@ async def bootstrap_shutdown(injector: Injector) -> None:
     Args:
         injector (Injector): The dependency injection container used to manage application dependencies.
     """
-
-    await injector.get(IzmoAuthAPIHTTPClient).aclose()
 
     await injector.get(TaskLauncher).wait_for_tasks_until_completed()
 

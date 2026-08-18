@@ -2,6 +2,7 @@ from sqlalchemy import BigInteger, Float, String, Integer, Boolean, Index
 from sqlalchemy.orm import Mapped, mapped_column
 from infrastructures.persistence.model.base import AbstractModel
 
+
 class MOSMNode(AbstractModel):
     __tablename__ = "osm_nodes"
 
@@ -12,8 +13,9 @@ class MOSMNode(AbstractModel):
 
     __table_args__ = (
         Index("idx_osm_nodes_lat_lon", "lat", "lon"),
-        {"extend_existing": True}
+        {"extend_existing": True},
     )
+
 
 class MOSMEdge(AbstractModel):
     __tablename__ = "osm_edges"
@@ -33,5 +35,5 @@ class MOSMEdge(AbstractModel):
     __table_args__ = (
         Index("idx_osm_edges_u_network", "u", "network_type"),
         Index("idx_osm_edges_v_network", "v", "network_type"),
-        {"extend_existing": True}
+        {"extend_existing": True},
     )

@@ -9,7 +9,6 @@ from core.config.external_service import ExternalServiceConfig
 from core.config.google_cloud import GoogleCloudConfig
 from core.config.loader import get_config_yaml_filepath, get_environment
 from core.config.logging import LoggingConfig
-from core.config.sentry import SentryConfig
 from core.types.environment import ApplicationEnvironment
 
 ENVIRONMENT: ApplicationEnvironment = get_environment()
@@ -22,7 +21,6 @@ class Settings(BaseSettings):
         alias="externalService",
         default=ExternalServiceConfig(),
     )
-    sentry: SentryConfig = Field(default=SentryConfig())
     logging: LoggingConfig = Field(default=LoggingConfig())
     google_cloud: GoogleCloudConfig = Field(
         alias="googleCloud",

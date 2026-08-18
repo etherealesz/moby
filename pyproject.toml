@@ -24,7 +24,6 @@ dependencies = [
 [dependency-groups]
 deployment = [
     "granian>=2.7.2",
-    "sentry-sdk[fastapi]>=2.48.0",
 ]
 dev = [
     "pre-commit>=4.5.1",

@@ -11,6 +11,7 @@ class MapManager:
     Manager singleton untuk mengelola dan memuat graph jaringan jalan (OSMnx)
     ke dalam memori (RAM) agar pencarian rute A* berjalan secara instan (milidetik).
     """
+
     @inject
     def __init__(self, session_maker: DatabaseMasterSessionMaker):
         self._session_maker = session_maker
@@ -37,7 +38,9 @@ class MapManager:
                 print(f"  -> Memuat {filename} ke memori...")
                 try:
                     self._graphs[key] = ox.load_graphml(filepath)
-                    print(f"     ✓ Sukses. Nodes: {len(self._graphs[key].nodes)}, Edges: {len(self._graphs[key].edges)}")
+                    print(
+                        f"     ✓ Sukses. Nodes: {len(self._graphs[key].nodes)}, Edges: {len(self._graphs[key].edges)}"
+                    )
                 except Exception as e:
                     print(f"     ✗ Gagal memuat {filename}: {e}")
         print("=== [MapManager] Selesai memuat peta ke RAM ===\n")
@@ -86,49 +89,67 @@ class MapManager:
 
             # Query all nodes using raw sql for maximum speed
             node_result = await session.execute(
-                text("SELECT id, lat, lon FROM osm_nodes WHERE network_type = :network_type"),
-                {"network_type": network_type}
+                text(
+                    "SELECT id, lat, lon FROM osm_nodes WHERE network_type = :network_type"
+                ),
+                {"network_type": network_type},
             )
             nodes_data = node_result.fetchall()
 
             if not nodes_data:
-                print(f"[MapManager] Tidak ada data node untuk network_type: {network_type} di database.")
+                print(
+                    f"[MapManager] Tidak ada data node untuk network_type: {network_type} di database."
+                )
                 return None
 
             # Query all edges using raw sql for maximum speed
             edge_result = await session.execute(
-                text("SELECT u, v, key, length, name, highway, oneway, geometry_wkt, maxspeed FROM osm_edges WHERE network_type = :network_type"),
-                {"network_type": network_type}
+                text(
+                    "SELECT u, v, key, length, name, highway, oneway, geometry_wkt, maxspeed FROM osm_edges WHERE network_type = :network_type"
+                ),
+                {"network_type": network_type},
             )
             edges_data = edge_result.fetchall()
 
             # Reconstruct NetworkX MultiDiGraph
             graph = nx.MultiDiGraph()
-            graph.graph['crs'] = 'epsg:4326'
+            graph.graph["crs"] = "epsg:4326"
 
             # Bulk add nodes
             for node_id, lat, lon in nodes_data:
                 graph.add_node(node_id, y=lat, x=lon)
 
             # Bulk add edges
-            for u, v, e_key, length, name, highway, oneway, geometry_wkt, maxspeed in edges_data:
+            for (
+                u,
+                v,
+                e_key,
+                length,
+                name,
+                highway,
+                oneway,
+                geometry_wkt,
+                maxspeed,
+            ) in edges_data:
                 edge_attrs = {
-                    'length': length,
-                    'name': name,
-                    'highway': highway,
-                    'oneway': oneway,
-                    'maxspeed': maxspeed
+                    "length": length,
+                    "name": name,
+                    "highway": highway,
+                    "oneway": oneway,
+                    "maxspeed": maxspeed,
                 }
                 if geometry_wkt:
                     try:
-                        edge_attrs['geometry'] = shapely.wkt.loads(geometry_wkt)
+                        edge_attrs["geometry"] = shapely.wkt.loads(geometry_wkt)
                     except Exception:
                         pass
 
                 graph.add_edge(u, v, key=e_key, **edge_attrs)
 
             self._graphs[key] = graph
-            print(f"[MapManager] Berhasil memuat graph '{network_type}' dari database. Nodes: {len(graph.nodes)}, Edges: {len(graph.edges)}")
+            print(
+                f"[MapManager] Berhasil memuat graph '{network_type}' dari database. Nodes: {len(graph.nodes)}, Edges: {len(graph.edges)}"
+            )
             return graph
 
     async def load_all_graphs_from_db(self) -> None:
@@ -147,4 +168,3 @@ class MapManager:
 class CMapManagerModule(Module):
     def configure(self, binder: Binder) -> None:
         binder.bind(MapManager, to=MapManager, scope=singleton)
-

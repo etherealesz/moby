@@ -17,4 +17,3 @@ async def lifespan(_: FastAPI, injector: Injector):
     yield
 
     await bootstrap_shutdown(injector)
-

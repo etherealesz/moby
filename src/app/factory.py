@@ -46,6 +46,10 @@ def create_app(injector: Injector) -> FastAPI:
     setup_routes(app)
     setup_exception_handlers(app)
 
+    @app.get("/health", status_code=status.HTTP_200_OK)
+    async def health_check():
+        return {"status": "ok"}
+
     attach_injector(app, injector)
 
     return app

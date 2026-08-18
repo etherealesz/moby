@@ -27,7 +27,15 @@ def create_google_cloud_storage_client(
             GOOGLE_SERVICE_ACCOUNT_FILES_DIR / "development.json"
         )
 
-    client = storage.Client.from_service_account_json(
-        service_account_json_filepath,
-    )
-    return client
+    if service_account_json_filepath.exists():
+        try:
+            client = storage.Client.from_service_account_json(
+                service_account_json_filepath,
+            )
+            return client
+        except Exception:
+            pass
+
+    # Fallback to anonymous client for local/development environments
+    # to avoid DefaultCredentialsError and metadata server timeouts.
+    return storage.Client.create_anonymous_client()

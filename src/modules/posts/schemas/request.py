@@ -30,8 +30,3 @@ class SPostPostsRequest(BaseModel):
             )
 
         return value.strip()
-
-
-class SIzmoAuthPostAuthLoginRequest(BaseModel):
-    username: str
-    password: str

@@ -1,8 +1,6 @@
 import asyncio
 from typing import Any, Callable, Coroutine, Set
 
-import sentry_sdk
-
 from core.logger.factory import create_app_logger
 
 logger = create_app_logger()
@@ -57,8 +55,6 @@ class TaskLauncher:
         except asyncio.CancelledError:
             pass
         except Exception as exc:
-            sentry_sdk.capture_exception(exc)
-
             if on_task_failed:
                 on_task_failed(exc)
             else:

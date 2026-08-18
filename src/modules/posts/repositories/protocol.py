@@ -7,11 +7,6 @@ from modules.posts.dto import DCreatePost
 
 
 @runtime_checkable
-class AuthRepository(Protocol):
-    async def authenticate(self, username: str, password: str): ...
-
-
-@runtime_checkable
 class PostRepository(Protocol):
     async def get_posts(self) -> Sequence[MPost]: ...
     async def create_post(self, post: DCreatePost) -> MPost: ...

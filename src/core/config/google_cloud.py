@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 
 
 class GoogleCloudBucket(BaseModel):
-    master: str = Field(default="izmo-development")
+    master: str = Field(default="trashnav-development")
 
 
 class GoogleCloudConfig(BaseModel):

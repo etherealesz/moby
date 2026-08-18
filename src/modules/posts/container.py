@@ -1,8 +1,7 @@
-from injector import Binder, Module, singleton
+from injector import Binder, Module
 
-from modules.posts.repositories.izmo_auth_api_auth import IzmoAuthAPIAuthRepository
-from modules.posts.repositories.izmo_post import IzmoPostRepository
-from modules.posts.repositories.protocol import AuthRepository, PostRepository
+from modules.posts.repositories.post import SqlAlchemyPostRepository
+from modules.posts.repositories.protocol import PostRepository
 from modules.posts.use_cases.create_post import CreatePostUseCase
 from modules.posts.use_cases.get_posts import GetPostsUseCase
 
@@ -13,8 +12,7 @@ class CPostModule(Module):
         self._register_usecases(binder)
 
     def _register_repositories(self, binder: Binder) -> None:
-        binder.bind(AuthRepository, to=IzmoAuthAPIAuthRepository, scope=singleton)
-        binder.bind(PostRepository, to=IzmoPostRepository)
+        binder.bind(PostRepository, to=SqlAlchemyPostRepository)
 
     def _register_usecases(self, binder: Binder) -> None:
         binder.bind(CreatePostUseCase, to=CreatePostUseCase)
