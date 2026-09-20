@@ -13,6 +13,7 @@ logger = create_app_logger()
 
 ox.settings.timeout = 300
 ox.settings.requests_timeout = 300
+ox.settings.use_cache = False
 
 
 DEFAULT_TARGET_PLACES = [
