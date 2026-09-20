@@ -69,7 +69,7 @@ class FindRouteUseCase:
         if dist_to_start > 5000 or dist_to_goal > 5000:
             raise Exception(
                 "Koordinat pencarian berada di luar area cakupan peta yang tersedia di database lokal. "
-                "Peta lokal saat ini hanya mencakup Jakarta dan Lembang (maksimal radius 5 km)."
+                "Peta lokal saat ini mencakup area Jabodetabek (Jakarta, Depok, Tangerang, Bekasi) dan Lembang (maksimal radius 5 km dari jalan terdekat)."
             )
 
         # Jalankan algoritma A* Search kustom

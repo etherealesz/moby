@@ -27,13 +27,17 @@ app = typer.Typer(help="Run available commands.")
 logger = create_app_logger()
 
 
-@app.command(name="run", help="Run a specific command by name.")
-def run(name: str):
+@app.command(
+    name="run",
+    help="Run a specific command by name.",
+    context_settings={"allow_extra_args": True, "ignore_unknown_options": True},
+)
+def run(ctx: typer.Context, name: str):
     _check_command_exists(name)
     from core.bootstrap import bootstrap_runtime
 
     bootstrap_runtime()
-    asyncio.run(_run_command(name))
+    asyncio.run(_run_command(name, extra_args=ctx.args))
 
 
 @app.callback()
@@ -85,7 +89,7 @@ def _check_command_exists(name: str) -> None:
         raise typer.Exit(1)
 
 
-async def _run_command(name: str) -> None:
+async def _run_command(name: str, extra_args: list[str] | None = None) -> None:
     command_module = importlib.import_module(f"{COMMANDS_MODULE}.{name}")
     if hasattr(command_module, "execute") and callable(command_module.execute):
         options = _run_pre_command_hook()
@@ -93,10 +97,17 @@ async def _run_command(name: str) -> None:
         logger.info(f"Running command: {name}")
         start_time = perf_counter()
 
+        sig = inspect.signature(command_module.execute)
+        kwargs = {"injector": options.injector}
+        if "args" in sig.parameters:
+            kwargs["args"] = extra_args or []
+        elif "extra_args" in sig.parameters:
+            kwargs["extra_args"] = extra_args or []
+
         if inspect.iscoroutinefunction(command_module.execute):
-            await command_module.execute(injector=options.injector)
+            await command_module.execute(**kwargs)
         else:
-            command_module.execute(injector=options.injector)
+            command_module.execute(**kwargs)
 
         elapsed_time = perf_counter() - start_time
         logger.info(f"Command '{name}' finished in {elapsed_time:.2f} seconds.")
@@ -105,7 +116,7 @@ async def _run_command(name: str) -> None:
         raise typer.Exit(0)
 
     print(
-        f"[bold red]Command '{name}' does not have a callable 'main' function.[/bold red]"
+        f"[bold red]Command '{name}' does not have a callable 'execute' function.[/bold red]"
     )
     raise typer.Exit(1)
 

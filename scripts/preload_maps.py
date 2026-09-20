@@ -11,12 +11,21 @@ DEMO_AREAS = [
     # 1. Rute Jakarta (Monas - Bundaran HI)
     ("Jakarta_Monas_HI_Walk", -6.1754, 106.8272, -6.1950, 106.8229, "walk"),
     ("Jakarta_Monas_HI_Drive", -6.1754, 106.8272, -6.1950, 106.8229, "drive"),
-    # 2. Rute Lembang (Alun-Alun Lembang - Hotel Pesona Bambu)
+    # 2. Rute Depok (Margonda - Balaikota Depok)
+    ("Depok_Margonda_Walk", -6.3731, 106.8346, -6.4025, 106.7942, "walk"),
+    ("Depok_Margonda_Drive", -6.3731, 106.8346, -6.4025, 106.7942, "drive"),
+    # 3. Rute Kota Tangerang (TangCity - Alun-Alun Tangerang)
+    ("Tangerang_TangCity_Walk", -6.1950, 106.6385, -6.1783, 106.6319, "walk"),
+    ("Tangerang_TangCity_Drive", -6.1950, 106.6385, -6.1783, 106.6319, "drive"),
+    # 4. Rute Kota Bekasi (Summarecon Bekasi - Alun-Alun Bekasi)
+    ("Bekasi_Summarecon_Walk", -6.2255, 106.9998, -6.2422, 106.9989, "walk"),
+    ("Bekasi_Summarecon_Drive", -6.2255, 106.9998, -6.2422, 106.9989, "drive"),
+    # 5. Rute Lembang (Alun-Alun Lembang - Hotel Pesona Bambu)
     ("Lembang_Alun_PesonaBambu_Walk", -6.8169, 107.6186, -6.8122, 107.6158, "walk"),
     ("Lembang_Alun_PesonaBambu_Drive", -6.8169, 107.6186, -6.8122, 107.6158, "drive"),
-    # 3. Dusun Bambu TPS Area
+    # 6. Dusun Bambu TPS Area
     ("Lembang_DusunBambu_Walk", -6.8169, 107.6186, -6.7973820, 107.5746838, "walk"),
-    # 4. Laxmi Resto TPS Area
+    # 7. Laxmi Resto TPS Area
     ("Lembang_LaxmiResto_Walk", -6.8169, 107.6186, -6.8775000, 107.5717684, "walk"),
 ]
 

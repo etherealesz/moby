@@ -15,39 +15,76 @@ ox.settings.timeout = 300
 ox.settings.requests_timeout = 300
 
 
-async def execute(injector: Injector):
+DEFAULT_TARGET_PLACES = [
+    "DKI Jakarta, Indonesia",
+    "Kota Depok, Jawa Barat, Indonesia",
+    "Kota Tangerang, Banten, Indonesia",
+    "Kota Bekasi, Jawa Barat, Indonesia",
+]
+
+
+async def execute(injector: Injector, args: list[str] | None = None):
     session = injector.get(DatabaseMasterSession)
 
-    args = sys.argv[3:]
+    if args is None:
+        args = sys.argv[3:]
 
     place = None
     mode = None
+    clean = False
+    combined = True
 
     for idx, arg in enumerate(args):
         if arg == "--place" and idx + 1 < len(args):
             place = args[idx + 1]
         elif arg == "--mode" and idx + 1 < len(args):
             mode = args[idx + 1]
+        elif arg == "--clean":
+            clean = True
+        elif arg == "--separate":
+            combined = False
 
-    if place or mode:
-        place = place or "Jakarta, Indonesia"
-        mode = mode or "walk"
-        await import_place_network(session, place, mode)
-    else:
-        targets = [
-            ("Jakarta, Indonesia", "drive"),
-        ]
-        for p, m in targets:
-            await import_place_network(session, p, m)
+    modes = ["drive"]
+    if mode:
+        if mode.lower() in ["all", "both"]:
+            modes = ["walk", "drive"]
+        else:
+            modes = [mode]
+
+    if place:
+        places_to_import = [place]
+        for m in modes:
+            await import_place_network(session, places_to_import, m, clean_mode=clean)
             await asyncio.sleep(2)
+    else:
+        if combined:
+            for m in modes:
+                await import_place_network(
+                    session, DEFAULT_TARGET_PLACES, m, clean_mode=clean
+                )
+                await asyncio.sleep(2)
+        else:
+            for m in modes:
+                for p in DEFAULT_TARGET_PLACES:
+                    await import_place_network(session, [p], m, clean_mode=clean)
+                    await asyncio.sleep(2)
 
 
 async def import_place_network(
-    session: DatabaseMasterSession, place_name: str, mode: str
+    session: DatabaseMasterSession,
+    places: list[str] | str,
+    mode: str,
+    clean_mode: bool = False,
 ):
-    logger.info(f"Mulai mengunduh peta OSM untuk: '{place_name}' | Mode: '{mode}'...")
+    place_label = ", ".join(places) if isinstance(places, list) else places
+    logger.info(f"Mulai mengunduh peta OSM untuk: [{place_label}] | Mode: '{mode}'...")
     try:
-        graph = ox.graph_from_place(place_name, network_type=mode)
+        if isinstance(places, list) and len(places) == 1:
+            target = places[0]
+        else:
+            target = places
+
+        graph = ox.graph_from_place(target, network_type=mode)
         logger.info(
             f"Peta terunduh. Nodes: {len(graph.nodes)}, Edges: {len(graph.edges)}"
         )
@@ -92,23 +129,32 @@ async def import_place_network(
     )
 
     async with session.begin():
-        node_ids = [n["id"] for n in nodes_data]
         chunk_size = 5000
 
-        logger.info("Membersihkan data lama yang bentrok...")
-        for i in range(0, len(node_ids), chunk_size):
-            chunk = node_ids[i : i + chunk_size]
+        if clean_mode:
+            logger.info(f"Membersihkan seluruh data lama untuk mode '{mode}'...")
             await session.execute(
-                delete(MOSMEdge).where(
-                    (MOSMEdge.network_type == mode)
-                    & (MOSMEdge.u.in_(chunk) | MOSMEdge.v.in_(chunk))
-                )
+                delete(MOSMEdge).where(MOSMEdge.network_type == mode)
             )
             await session.execute(
-                delete(MOSMNode).where(
-                    (MOSMNode.network_type == mode) & (MOSMNode.id.in_(chunk))
-                )
+                delete(MOSMNode).where(MOSMNode.network_type == mode)
             )
+        else:
+            node_ids = [n["id"] for n in nodes_data]
+            logger.info("Membersihkan data lama yang bentrok...")
+            for i in range(0, len(node_ids), chunk_size):
+                chunk = node_ids[i : i + chunk_size]
+                await session.execute(
+                    delete(MOSMEdge).where(
+                        (MOSMEdge.network_type == mode)
+                        & (MOSMEdge.u.in_(chunk) | MOSMEdge.v.in_(chunk))
+                    )
+                )
+                await session.execute(
+                    delete(MOSMNode).where(
+                        (MOSMNode.network_type == mode) & (MOSMNode.id.in_(chunk))
+                    )
+                )
 
         logger.info("Memasukkan data nodes...")
         for i in range(0, len(nodes_data), chunk_size):
@@ -121,5 +167,5 @@ async def import_place_network(
             await session.execute(insert(MOSMEdge), chunk)
 
     logger.info(
-        f"Sukses mengimpor peta untuk '{place_name}' | Mode: '{mode}' ke database.\n"
+        f"Sukses mengimpor peta untuk [{place_label}] | Mode: '{mode}' ke database.\n"
     )
