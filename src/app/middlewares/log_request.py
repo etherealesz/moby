@@ -14,10 +14,6 @@ logger = create_request_logger()
 
 
 class LogRequestMiddleware(BaseHTTPMiddleware):
-    """
-    Middleware to log HTTP requests and responses.
-    """
-
     async def dispatch(
         self,
         request: Request,
@@ -31,9 +27,6 @@ class LogRequestMiddleware(BaseHTTPMiddleware):
             return response
         except Exception as exc:
             if isinstance(exc, RequestCancelledError):
-                # Keep returning response with status code 499 to indicate client
-                # closed the connection, this is needed for logging purposes, so
-                # we can track requests that cancelled by clients.
                 response = Response(status_code=499)
                 return response
 
@@ -50,8 +43,6 @@ class LogRequestMiddleware(BaseHTTPMiddleware):
                 response.headers.get("content-length", '"-"') if response else '"-"'
             )
 
-            # Safely get the response status code, defaulting to 500 if
-            # response is None, which indicates an unexpected error raised.
             response_status_code = (
                 response.status_code
                 if response

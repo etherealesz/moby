@@ -6,13 +6,6 @@ PORT_ARGUMENTS = ["--port", "-p"]
 
 
 def get_server_port():
-    """
-    Get the server port from command line arguments or return the default port.
-
-    Returns:
-        int: The server port number.
-    """
-
     for idx, arg in enumerate(sys.argv):
         if arg in PORT_ARGUMENTS and idx + 1 < len(sys.argv):
             try:

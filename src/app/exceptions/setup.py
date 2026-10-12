@@ -11,16 +11,6 @@ from app.exceptions.handlers import (
 
 
 def setup_exception_handlers(app: FastAPI) -> None:
-    """
-    Setup exception handlers for the FastAPI application.
-
-    Args:
-        app (FastAPI): The FastAPI application instance.
-
-    Returns:
-        None
-    """
-
     app.add_exception_handler(
         exc_class_or_status_code=StarletteHTTPException,
         handler=starlette_http_exception_handler,
@@ -35,7 +25,6 @@ def setup_exception_handlers(app: FastAPI) -> None:
         handler=validation_error_handler,
     )
 
-    # Fallback for uncaught exceptions
     app.add_exception_handler(
         exc_class_or_status_code=Exception,
         handler=uncaught_exception_handler,

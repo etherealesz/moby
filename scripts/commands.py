@@ -14,6 +14,7 @@ from rich import print
 from container.factory import create_command_injector
 from core.bootstrap import bootstrap_runtime, bootstrap_shutdown
 from core.logger.factory import create_app_logger
+from infrastructures.databases.utils.session_helper import close_all_db_sessions
 
 COMMANDS_MODULE = "commands"
 
@@ -42,10 +43,6 @@ def run(ctx: typer.Context, name: str):
 
 @app.callback()
 def callback():
-    """
-    Setup callback function for removing group command when running the script directly.
-    """
-
     pass
 
 
@@ -56,6 +53,7 @@ def _run_pre_command_hook():
 
 
 async def _run_post_command_hook(options: RunCommandOptions):
+    await close_all_db_sessions(options.injector)
     await bootstrap_shutdown(injector=options.injector)
 
 
@@ -104,15 +102,16 @@ async def _run_command(name: str, extra_args: list[str] | None = None) -> None:
         elif "extra_args" in sig.parameters:
             kwargs["extra_args"] = extra_args or []
 
-        if inspect.iscoroutinefunction(command_module.execute):
-            await command_module.execute(**kwargs)
-        else:
-            command_module.execute(**kwargs)
+        try:
+            if inspect.iscoroutinefunction(command_module.execute):
+                await command_module.execute(**kwargs)
+            else:
+                command_module.execute(**kwargs)
+        finally:
+            await _run_post_command_hook(options)
 
         elapsed_time = perf_counter() - start_time
         logger.info(f"Command '{name}' finished in {elapsed_time:.2f} seconds.")
-
-        await _run_post_command_hook(options)
         raise typer.Exit(0)
 
     print(

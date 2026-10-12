@@ -8,11 +8,7 @@ from container.factory import create_injector
 from core.bootstrap import bootstrap_runtime
 from core.config.loader import get_runtime_environment
 
-# Sometimes, httpx client that not registered inside container would throw
-# error about missing ssl module, so we need to register it globally.
-# Removing comment below will cause unclear error message about ssl module when
-# httpx client is not registered inside container.
-builtins.ssl = ssl  # pyright: ignore
+builtins.ssl = ssl
 
 bootstrap_runtime()
 

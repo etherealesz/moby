@@ -4,11 +4,11 @@ from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, YamlConfigSettingsSource
 
 from core.config.application import ApplicationConfig
+from core.config.classification import ClassificationConfig
 from core.config.database import DatabaseConfig
-from core.config.external_service import ExternalServiceConfig
-from core.config.google_cloud import GoogleCloudConfig
 from core.config.loader import get_config_yaml_filepath, get_environment
 from core.config.logging import LoggingConfig
+from core.config.navigation import NavigationConfig
 from core.types.environment import ApplicationEnvironment
 
 ENVIRONMENT: ApplicationEnvironment = get_environment()
@@ -17,17 +17,10 @@ ENVIRONMENT: ApplicationEnvironment = get_environment()
 class Settings(BaseSettings):
     application: ApplicationConfig = Field(default=ApplicationConfig())
     database: DatabaseConfig = Field(default=DatabaseConfig())
-    external_service: ExternalServiceConfig = Field(
-        alias="externalService",
-        default=ExternalServiceConfig(),
-    )
     logging: LoggingConfig = Field(default=LoggingConfig())
-    google_cloud: GoogleCloudConfig = Field(
-        alias="googleCloud",
-        default=GoogleCloudConfig(),
-    )
+    classification: ClassificationConfig = Field(default=ClassificationConfig())
+    navigation: NavigationConfig = Field(default=NavigationConfig())
 
-    # Timezone
     timezone: str = Field(default="Asia/Jakarta")
     timezone_info: ZoneInfo | None = Field(init=False, default=None)
 

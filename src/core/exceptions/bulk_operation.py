@@ -3,10 +3,6 @@ from core.dtos.bulk_operation import DBulkOperationResultMeta
 
 
 class BulkOperationError(Exception):
-    """
-    Exception raised when a bulk operation encounters an error.
-    """
-
     def __init__(
         self,
         bulk_operation_result_meta: DBulkOperationResultMeta,

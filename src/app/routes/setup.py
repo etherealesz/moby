@@ -9,16 +9,6 @@ from app.routes.factory import (
 
 
 def setup_routes(app: FastAPI) -> None:
-    """
-    Setup application routes.
-
-    Args:
-        app (FastAPI): The FastAPI application instance.
-
-    Returns:
-        None
-    """
-
     root_router = create_root_router()
     api_router = create_api_router()
     websocket_router = create_websocket_router()

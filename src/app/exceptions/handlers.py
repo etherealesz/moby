@@ -82,7 +82,6 @@ async def validation_error_handler(request: Request, exc: Exception):
         raise exc
 
     if len(exc.errors()) == 1:
-        # Check if the error is due to missing request body (e.g., when the endpoint expects a JSON body but none is provided)
         if "body" in exc.errors()[0]["loc"] and not exc.body:
             status_code = status.HTTP_400_BAD_REQUEST
             response = (
@@ -96,7 +95,6 @@ async def validation_error_handler(request: Request, exc: Exception):
                 content=jsonable_encoder(response),
             )
 
-        # Check if the error is due to invalid JSON format in the request body
         if exc.errors()[0]["type"] == "json_invalid":
             status_code = status.HTTP_400_BAD_REQUEST
             response = (
@@ -113,8 +111,6 @@ async def validation_error_handler(request: Request, exc: Exception):
     validation_errors: Dict[str, str] = {}
     value_error_prefix = "Value error, "
     for error in exc.errors():
-        # Extract the field name from the error location, field name possibly contains
-        # nested fields, e.g., "patient, name, ..."
         nested_field_name: List[str] = [
             str(error_location_part) for error_location_part in error["loc"]
         ][1:]

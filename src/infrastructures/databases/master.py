@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 from core.config.settings import settings
-from infrastructures.databases.utils.dsn import build_dsn
+from infrastructures.databases.utils.dsn_helper import build_dsn
 
 ssl_mode = "require"
 if settings.database.master.host in ["localhost", "127.0.0.1"]:

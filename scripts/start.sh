@@ -4,7 +4,7 @@ INTERFACE="asgi"
 APP_MODULE="main:app"
 HOST="0.0.0.0"
 PORT="8080"
-LOOP="uvloop"
+LOOP="auto"
 WORKERS="1"
 
 exec granian \

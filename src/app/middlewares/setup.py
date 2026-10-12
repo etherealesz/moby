@@ -10,17 +10,6 @@ from app.middlewares.request_context import RequestContextMiddleware
 
 
 def setup_middlewares(app: FastAPI, injector: Injector) -> None:
-    """
-    Setup middlewares for the FastAPI application.
-
-    Args:
-        app (FastAPI): The FastAPI application instance.
-        injector (Injector): The dependency injection container.
-
-    Returns:
-        None
-    """
-
     app.add_middleware(CloseDatabaseSessionsMiddleware)
     app.add_middleware(InjectorMiddleware, injector=injector)
     app.add_middleware(RequestCancelledMiddleware)

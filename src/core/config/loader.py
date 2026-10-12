@@ -7,13 +7,6 @@ from core.types.environment import ApplicationEnvironment, RuntimeEnvironment
 
 
 def get_environment() -> ApplicationEnvironment:
-    """
-    Get the current environment based on the namespace file.
-
-    Returns:
-        ApplicationEnvironment: The current application environment.
-    """
-
     if not os.path.exists(NAMESPACE_FILEPATH):
         return "local"
 
@@ -28,28 +21,11 @@ def get_environment() -> ApplicationEnvironment:
 
 
 def get_config_yaml_filepath(environment: ApplicationEnvironment) -> str:
-    """
-    Get the configuration YAML file path based on the environment.
-
-    Args:
-        environment (ApplicationEnvironment): The current application environment.
-
-    Returns:
-        str: The file path to the configuration YAML file.
-    """
-
     config_yaml_filepath = CONFIG_FILES_DIR / f"{environment}.yaml"
     return str(config_yaml_filepath)
 
 
 def get_runtime_environment() -> RuntimeEnvironment:
-    """
-    Determine the run environment based on the command used to start the application.
-
-    Returns:
-        RuntimeEnvironment: The determined runtime environment (e.g., "uvicorn", "fastapi-run", "fastapi-dev", or "unknown").
-    """
-
     cmd = sys.argv[0]
 
     if "uvicorn" in cmd:

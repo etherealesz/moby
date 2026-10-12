@@ -13,26 +13,18 @@ from app.schemas.response import (
     SStandardResponse,
 )
 from core.dtos.bulk_operation import DBulkOperationResultMeta
-from core.dtos.pagination import DPaginationMeta
+from core.dtos.pagination import DPaginatedResultsMeta
 from core.exceptions.bulk_operation import BulkOperationError
 
 T = TypeVar("T", bound=BaseModel)
 
 
 class ResponseMetaVariables(BaseModel):
-    """
-    Helper class to hold meta variables for building responses.
-    """
-
-    pagination_meta: DPaginationMeta | None = Field(default=None)
+    pagination_meta: DPaginatedResultsMeta | None = Field(default=None)
     bulk_operation_result_meta: DBulkOperationResultMeta | None = Field(default=None)
 
 
 class StandardResponseBuilder(Generic[T]):
-    """
-    Builder class for constructing standardized API responses.
-    """
-
     def __init__(self) -> None:
         self._status_code: int = status.HTTP_200_OK
         self._error: Exception | None = None
@@ -80,14 +72,16 @@ class StandardResponseBuilder(Generic[T]):
     ) -> "StandardResponseBuilder[T]":
         self._error = validation_error
         self._error_detail = validation_error.validation_errors
-        self._status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+        self._status_code = status.HTTP_422_UNPROCESSABLE_CONTENT
         return self
 
     def set_data(self, data: T | Sequence[T] | None) -> "StandardResponseBuilder[T]":
         self._data = data
         return self
 
-    def set_pagination_meta(self, meta: DPaginationMeta) -> "StandardResponseBuilder[T]":
+    def set_pagination_meta(
+        self, meta: DPaginatedResultsMeta
+    ) -> "StandardResponseBuilder[T]":
         self._meta_variables.pagination_meta = meta
         return self
 

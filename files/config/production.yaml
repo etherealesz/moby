@@ -1,6 +1,6 @@
 application:
-  name: TrashNav Production
-  version: 0.0.1
+  name: MOBY
+  version: 0.1.0
   debug: false
 database:
   master:
@@ -11,4 +11,28 @@ database:
     name: template_be
 logging:
   level: info
+classification:
+  device: auto
+  clahe:
+    clipLimit: 2.0
+    tileGridSize: [8, 8]
+  detector:
+    weightsPath: models/detector/best.pt
+    confidenceThreshold: 0.5
+    imageSize: 640
+  classifier:
+    weightsPath: models/classifier/best.pt
+    imageSize: 224
+  temporalSmoothing:
+    alpha: 0.6
+    beta: 0.5
+    margin: 0.15
+    nFrames: 3
+    iouThreshold: 0.3
+    maxMissedFrames: 5
+navigation:
+  maxCandidateFacilities: 5
+  maxSearchRadiusMeter: 20000
+  bboxPaddingDegree: 0.01
+  maxSnapDistanceMeter: 1000
 timezone: Asia/Jakarta

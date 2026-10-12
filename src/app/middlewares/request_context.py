@@ -11,10 +11,6 @@ from app.contexts.request import RequestContext, request_context
 
 
 class RequestContextMiddleware(BaseHTTPMiddleware):
-    """
-    Middleware to manage request context, including request ID and timestamp.
-    """
-
     async def dispatch(
         self,
         request: Request,

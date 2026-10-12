@@ -1,8 +1,11 @@
 import math
+from typing import Generic, TypeVar
 
 from pydantic import BaseModel, Field, computed_field
 
 from core.constants.pagination import DEFAULT_PAGINATION_SIZE
+
+T = TypeVar("T")
 
 
 class DPagination(BaseModel):
@@ -10,7 +13,7 @@ class DPagination(BaseModel):
     items_per_page: int = Field(default=DEFAULT_PAGINATION_SIZE)
 
 
-class DPaginationMeta(BaseModel):
+class DPaginatedResultsMeta(BaseModel):
     total_items: int
     current_page: int
     items_per_page: int
@@ -31,3 +34,16 @@ class DPaginationMeta(BaseModel):
     @property
     def has_previous_page(self) -> bool:
         return self.current_page > 1
+
+
+class DPaginatedResults(DPaginatedResultsMeta, Generic[T]):
+    model_config = {"arbitrary_types_allowed": True}
+
+    results: list[T]
+
+
+class DResultsWithTotalItems(BaseModel, Generic[T]):
+    model_config = {"arbitrary_types_allowed": True}
+
+    total_items: int = Field(ge=0)
+    results: list[T]
