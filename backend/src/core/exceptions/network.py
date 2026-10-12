@@ -1,0 +1,3 @@
+class RequestCancelledError(Exception):
+    def __init__(self):
+        super().__init__("REQUEST_CANCELLED")

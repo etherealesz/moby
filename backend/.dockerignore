@@ -1,0 +1,14 @@
+.venv
+.git
+.gitignore
+__pycache__
+*.pyc
+*.pyo
+tests/
+docs/
+training/
+data/
+weights/
+reports/
+scripts/alembic/
+.pre-commit-config.yaml
