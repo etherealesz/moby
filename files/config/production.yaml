@@ -4,11 +4,11 @@ application:
   debug: false
 database:
   master:
-    host: 35.187.244.239
-    port: 5432
-    user: postgres
-    password: d3v3l0p8015
-    name: template_be
+    host: 
+    port: 
+    user: 
+    password: 
+    name: 
 logging:
   level: info
 classification:
