@@ -9,7 +9,7 @@ from infrastructures.persistence.model.base import AbstractModel
 class RoadEdge(AbstractModel):
     """
     Tabel Road_Edge (Tabel L9.6) ditambah kolom network_type dan oneway
-    (Keputusan Terbuka nomor 1, lihat docs/keputusan.md).
+    untuk membedakan moda berjalan kaki dan berkendara.
 
     Setiap baris adalah sisi berarah from_node_id -> to_node_id. Jalan dua arah
     disimpan sebagai dua baris.
