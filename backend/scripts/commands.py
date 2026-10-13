@@ -35,8 +35,6 @@ logger = create_app_logger()
 )
 def run(ctx: typer.Context, name: str):
     _check_command_exists(name)
-    from core.bootstrap import bootstrap_runtime
-
     bootstrap_runtime()
     asyncio.run(_run_command(name, extra_args=ctx.args))
 

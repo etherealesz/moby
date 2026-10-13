@@ -140,9 +140,9 @@ __marimo__/
 .DS_Store
 
 cache/
-data/
-models/
-weights/
+/data/
+/models/
+/weights/
 *.pt
 maps_cache/
 

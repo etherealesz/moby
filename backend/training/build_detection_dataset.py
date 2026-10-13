@@ -4,10 +4,8 @@ import random
 import shutil
 from collections import defaultdict
 from pathlib import Path
-
 import cv2
 import numpy as np
-
 from core.constants.waste import DETECTION_CLASS_NAME
 from modules.classification.services.image_preprocessor.service import ImagePreprocessor
 from training.common import (

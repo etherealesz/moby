@@ -1,14 +1,13 @@
 import argparse
 import time
-
 import cv2
 import numpy as np
 import torch
+from matplotlib.figure import Figure
 from torch import nn
 from torch.utils.data import DataLoader, Dataset
 from torchvision.transforms import v2
-
-from core.constants.paths import PROJECT_ROOT
+from core.constants.paths import PROJECT_ROOT, REPORTS_DIR
 from core.constants.waste import WASTE_CATEGORY_LABELS
 from modules.classification.services.image_preprocessor.service import ImagePreprocessor
 from modules.classification.services.waste_classifier.utils import (
@@ -305,17 +304,11 @@ def save_checkpoint(model, options, mean, std, best: dict) -> None:
 
 
 def plot_history(history: list[dict]) -> None:
-    import matplotlib
-
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-
-    from core.constants.paths import REPORTS_DIR
-
     if not history:
         return
     steps = range(1, len(history) + 1)
-    figure, (loss_axis, acc_axis) = plt.subplots(1, 2, figsize=(11, 4))
+    figure = Figure(figsize=(11, 4))
+    loss_axis, acc_axis = figure.subplots(1, 2)
     loss_axis.plot(steps, [h["train_loss"] for h in history], label="latih")
     loss_axis.plot(steps, [h["val_loss"] for h in history], label="validasi")
     loss_axis.set_title("Loss")
@@ -328,7 +321,6 @@ def plot_history(history: list[dict]) -> None:
         axis.grid(alpha=0.3)
     figure.tight_layout()
     figure.savefig(REPORTS_DIR / "classifier_training_history.png", dpi=150)
-    plt.close(figure)
 
 
 if __name__ == "__main__":

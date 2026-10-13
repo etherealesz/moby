@@ -1,6 +1,6 @@
 import argparse
 import shutil
-
+from ultralytics import YOLO
 from core.constants.paths import MODELS_DIR
 from training.common import DETECTION_DIR, DETECTOR_WEIGHTS, write_json_report
 
@@ -19,7 +19,6 @@ def main() -> None:
     parser.add_argument("--name", default="yolo26_sampah")
     options = parser.parse_args()
 
-    from ultralytics import YOLO
 
     model = YOLO(options.model)
     project_dir = MODELS_DIR / "detector_runs"

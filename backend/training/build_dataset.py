@@ -7,10 +7,8 @@ from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
-
 import cv2
 import numpy as np
-
 from core.constants.paths import PROJECT_ROOT
 from training.common import (
     CLASSIFICATION_DIR,

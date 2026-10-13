@@ -1,11 +1,10 @@
 import argparse
 import time
 from pathlib import Path
-
 import cv2
 import numpy as np
 import torch
-
+from ultralytics import YOLO
 from core.constants.waste import DETECTION_CLASS_NAME
 from modules.classification.services.image_preprocessor.service import ImagePreprocessor
 from modules.classification.services.object_detector.service import ObjectDetector
@@ -36,8 +35,6 @@ def main() -> None:
         help="Citra data/detection sudah melalui CLAHE (bawaan build_detection_dataset).",
     )
     options = parser.parse_args()
-
-    from ultralytics import YOLO
 
     metrics = YOLO(options.weights).val(
         data=options.data,

@@ -2,6 +2,7 @@ import threading
 from pathlib import Path
 
 import numpy as np
+from ultralytics import YOLO
 
 from core.config.settings import settings
 from core.constants.paths import PROJECT_ROOT
@@ -44,8 +45,6 @@ class ObjectDetector:
         if not self._weights_path.exists():
             logger.error(f"Detector weights not found: {self._weights_path}")
             raise DetectorModelNotAvailableError
-
-        from ultralytics import YOLO
 
         logger.info(f"Loading detector weights from {self._weights_path}")
         self._model = YOLO(str(self._weights_path))

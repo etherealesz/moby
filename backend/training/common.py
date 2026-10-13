@@ -2,12 +2,11 @@ import csv
 import json
 import random
 import re
+import torch
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-
 import numpy as np
-
 from core.constants.paths import DATA_DIR, MODELS_DIR, REPORTS_DIR
 from core.constants.waste import WASTE_CATEGORY_LABELS
 
@@ -134,7 +133,6 @@ def slugify(text: str) -> str:
 
 
 def seed_everything(seed: int) -> None:
-    import torch
 
     random.seed(seed)
     np.random.seed(seed)

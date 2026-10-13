@@ -1,7 +1,9 @@
 import argparse
 import time
 from collections import Counter, defaultdict
-
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 import cv2
 import numpy as np
 import torch
@@ -190,11 +192,6 @@ def write_confusion_matrix(matrix: np.ndarray, split: str) -> None:
         ],
         ["aktual", *WASTE_CATEGORY_LABELS],
     )
-
-    import matplotlib
-
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
 
     figure, axis = plt.subplots(figsize=(6, 5))
     image = axis.imshow(matrix, cmap="Blues")
