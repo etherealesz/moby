@@ -1,0 +1,11 @@
+.searchBar {
+  padding: 20px;
+  border-bottom: 2px solid var(--moby-line);
+}
+
+.content {
+  padding: 28px 20px 48px;
+  --help-gap: 40px;
+  --help-title-size: 30px;
+  --help-cols: 1;
+}

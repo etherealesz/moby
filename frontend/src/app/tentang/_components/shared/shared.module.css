@@ -1,0 +1,79 @@
+.techList {
+  margin: 20px 0 0;
+  border-top: 1px solid var(--moby-line);
+}
+
+.techRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--moby-line);
+}
+
+.techLabel {
+  color: var(--moby-muted);
+}
+
+.techValue {
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+}
+
+.developer {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.photo {
+  aspect-ratio: 1;
+}
+
+.devName {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.devMeta {
+  margin: 0 0 12px;
+  color: var(--moby-ink-2);
+}
+
+.devEmail {
+  color: var(--moby-green);
+  overflow-wrap: anywhere;
+}
+
+.flowIndex {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--moby-green);
+}
+
+.flowTitle {
+  margin: 10px 0;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.flowBody {
+  margin: 0;
+  line-height: 1.55;
+  color: var(--moby-ink-2);
+}
+
+.flowLast,
+.flowLast .flowIndex,
+.flowLast .flowBody {
+  color: #fff;
+}
+
+.flowLast {
+  background: var(--moby-green);
+}

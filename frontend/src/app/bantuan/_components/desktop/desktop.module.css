@@ -1,0 +1,52 @@
+.body {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 340px minmax(0, 1fr);
+}
+
+.sidebar {
+  background: var(--moby-panel);
+  border-right: 2px solid var(--moby-line);
+}
+
+.toc {
+  position: sticky;
+  top: var(--moby-header-h);
+  padding: 32px 0;
+}
+
+.tocTitle {
+  display: block;
+  padding: 0 32px 16px;
+}
+
+.tocList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tocLink {
+  display: block;
+  padding: 18px 32px;
+  font-size: 17px;
+  color: var(--moby-ink);
+  text-decoration: none;
+  border-left: 4px solid transparent;
+}
+
+.tocLink:hover,
+.tocLink:focus-visible {
+  background: var(--moby-bg);
+  border-left-color: var(--moby-green);
+  outline: none;
+}
+
+.content {
+  padding: 64px var(--moby-gutter) 80px;
+  --help-title-size: clamp(40px, 3.6vw, 56px);
+}
+
+.search {
+  width: 300px;
+}

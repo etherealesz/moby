@@ -1,0 +1,57 @@
+.top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  border-bottom: 2px solid var(--moby-line);
+}
+
+.background {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 72px var(--moby-gutter) 80px;
+  border-right: 2px solid var(--moby-line);
+}
+
+.headline {
+  margin: 8px 0 12px;
+  font-size: clamp(44px, 4vw, 64px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+.paragraph {
+  max-width: 40em;
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.65;
+  color: var(--moby-ink-2);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  padding: 72px var(--moby-gutter) 64px;
+  background: var(--moby-panel);
+}
+
+.flowSection {
+  padding: 56px var(--moby-gutter) 72px;
+}
+
+.flowGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 32px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 2px solid var(--moby-line);
+  border-left: 2px solid var(--moby-line);
+}
+
+.flowCell {
+  padding: 26px 28px 34px;
+  border-right: 2px solid var(--moby-line);
+  border-bottom: 2px solid var(--moby-line);
+}
