@@ -1,0 +1,14 @@
+.content {
+  --list-pad-x: 20px;
+}
+
+.stage {
+  aspect-ratio: 9 / 10;
+  max-height: 70dvh;
+  width: 100%;
+  border-bottom: 2px solid var(--moby-line);
+}
+
+.routeAction {
+  padding: 0 20px 32px;
+}

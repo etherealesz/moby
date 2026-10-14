@@ -1,0 +1,53 @@
+.body {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr) 440px;
+  min-height: calc(100dvh - var(--moby-header-h) - 84px);
+}
+
+.stageColumn {
+  display: flex;
+  flex-direction: column;
+  border-right: 2px solid var(--moby-line);
+}
+
+.stage {
+  flex: 1;
+  min-height: 520px;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 22px 36px;
+  border-top: 2px solid var(--moby-line);
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  --list-pad-x: 32px;
+}
+
+.facility {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+  padding: 30px 32px 32px;
+  background: var(--moby-panel);
+  border-top: 2px solid var(--moby-line);
+}
+
+.facilityName {
+  margin: 4px 0 0;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.facilityMeta {
+  margin: 0 0 12px;
+  font-size: 17px;
+  color: var(--moby-ink-2);
+}

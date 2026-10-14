@@ -1,0 +1,137 @@
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--moby-green);
+  text-transform: uppercase;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.status::before {
+  width: 10px;
+  height: 10px;
+  content: '';
+  background: currentcolor;
+}
+
+.statusOff {
+  color: var(--moby-gray);
+}
+
+.listHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 24px var(--list-pad-x, 32px) 18px;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  column-gap: 18px;
+  row-gap: 8px;
+  align-items: center;
+  width: 100%;
+  padding: 22px var(--list-pad-x, 32px);
+  font-family: inherit;
+  color: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--moby-line-soft);
+  border-left: 4px solid transparent;
+  cursor: pointer;
+}
+
+.item:hover {
+  background: var(--moby-bg);
+}
+
+.item:focus-visible {
+  outline: 2px solid var(--moby-green);
+  outline-offset: -2px;
+}
+
+.itemSelected {
+  background: var(--moby-bg);
+  border-left-color: var(--moby-green);
+}
+
+.itemIndex {
+  display: grid;
+  grid-row: span 3;
+  align-self: start;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--moby-ink);
+}
+
+.itemSelected .itemIndex {
+  background: var(--moby-green);
+}
+
+.itemLow .itemIndex {
+  background: var(--moby-gray);
+}
+
+.itemName {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.itemScore {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.itemMeta,
+.itemBar {
+  grid-column: 2 / -1;
+}
+
+.empty {
+  padding: 28px var(--list-pad-x, 32px);
+  color: var(--moby-muted);
+  border-top: 1px solid var(--moby-line-soft);
+}
+
+.disposal {
+  padding: 30px var(--list-pad-x, 32px);
+  border-top: 2px solid var(--moby-line);
+}
+
+.steps {
+  list-style: decimal;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0 0;
+  padding-left: 22px;
+  font-size: 17px;
+  color: var(--moby-ink-2);
+}
+
+.note {
+  margin: 16px 0 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--moby-ink-2);
+}
