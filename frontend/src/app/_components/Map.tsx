@@ -13,6 +13,8 @@ import {
 } from 'react-leaflet';
 import { PRIMARY, SEMANTIC, TERTIARY } from '@/lib/constants/colors';
 
+import 'leaflet/dist/leaflet.css';
+
 // ── Custom Pin Icons ────────────────────────────────────────────────────────
 const makePin = (color: string, label: string) =>
   L.divIcon({

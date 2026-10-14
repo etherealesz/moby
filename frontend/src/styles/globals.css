@@ -1,27 +1,49 @@
-@import 'leaflet/dist/leaflet.css';
-
 @layer theme, base, mantine, components, utilities;
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/preflight.css' layer(base);
 @import 'tailwindcss/utilities.css' layer(utilities);
-
 @import '@mantine/core/styles.css';
 @import '@mantine/notifications/styles.css';
 @import '@mantine/dates/styles.css';
 @import './theme.css';
 
-/* Ensure Leaflet container fills 100% and tiles render smoothly */
+:root {
+  --moby-canvas: #dcdad6;
+  --moby-bg: #f2f2f0;
+  --moby-panel: #e9e9e7;
+  --moby-ink: #1c1c1a;
+  --moby-ink-2: #464644;
+  --moby-muted: #75756f;
+  --moby-line: #a5a5a1;
+  --moby-line-soft: #c8c8c4;
+  --moby-green: #276b3f;
+  --moby-green-dark: #1d5130;
+  --moby-sage: #7fa58b;
+  --moby-gray: #6b6b68;
+  --moby-stripe-a: #d2d2cf;
+  --moby-stripe-b: #dadad7;
+  --moby-gutter: clamp(16px, 4vw, 48px);
+  --moby-header-h: 88px;
+  --moby-topbar-h: 64px;
+}
+
+body {
+  background: var(--moby-canvas);
+  color: var(--moby-ink);
+}
+
 .leaflet-container {
   width: 100% !important;
   height: 100% !important;
   min-height: 100% !important;
   z-index: 1;
-  background-color: #f4fbfb;
+  background-color: var(--moby-panel);
 }
 
 .leaflet-pane {
   z-index: 400;
 }
+
 .leaflet-top,
 .leaflet-bottom {
   z-index: 500;

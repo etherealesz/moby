@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 import { Notifications } from '@mantine/notifications';
+import { archivo } from '../lib/mantine/fonts';
 import theme from '../lib/mantine/theme';
 
 import '../styles/globals.css';
@@ -9,9 +10,12 @@ import '../styles/globals.css';
 import { SWRConfig } from 'swr';
 
 export const metadata: Metadata = {
-  title: 'TrashNav — Smart Waste Platform',
+  title: {
+    default: 'MOBY — Klasifikasi Sampah & Rute Fasilitas',
+    template: '%s · MOBY',
+  },
   description:
-    'TrashNav — Platform Klasifikasi Sampah Cerdas dan Navigasi Rute Pengangkutan Ramah Lingkungan',
+    'MOBY: klasifikasi citra sampah dengan MobileNetV4 dan rute ke fasilitas pengelolaan dengan A* Search.',
   robots: '/robots.txt',
   icons: {
     icon: '/images/logo.png',
@@ -22,7 +26,7 @@ export default function RootLayout({
   children,
 }: Readonly<React.PropsWithChildren>) {
   return (
-    <html lang="id" suppressHydrationWarning>
+    <html lang="id" className={archivo.variable} suppressHydrationWarning>
       <head>
         <ColorSchemeScript forceColorScheme="light" />
         {/*<meta
