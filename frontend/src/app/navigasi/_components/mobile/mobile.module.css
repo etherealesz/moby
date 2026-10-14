@@ -1,0 +1,36 @@
+.form {
+  --form-pad-x: 20px;
+}
+
+.city {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--moby-muted);
+  text-transform: uppercase;
+}
+
+.map {
+  height: 52dvh;
+  min-height: 320px;
+  border-bottom: 2px solid var(--moby-line);
+}
+
+.facility {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 28px 20px 32px;
+  border-top: 2px solid var(--moby-line);
+}
+
+.facilityName {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.facilityMeta {
+  margin: 0 0 16px;
+  font-size: 16px;
+  color: var(--moby-ink-2);
+}

@@ -1,0 +1,132 @@
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 28px var(--form-pad-x, 32px);
+}
+
+.block + .block {
+  border-top: 2px solid var(--moby-line);
+}
+
+.endpoints {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  column-gap: 18px;
+}
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 36px;
+  padding-bottom: 18px;
+}
+
+.railDot {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.railLine {
+  flex: 1;
+  width: 2px;
+  background: var(--moby-line);
+}
+
+.railStart {
+  background: var(--moby-green);
+}
+
+.railEnd {
+  background: var(--moby-ink);
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fieldLabel {
+  font-size: 15px;
+  color: var(--moby-ink-2);
+}
+
+.fieldValue {
+  overflow: hidden;
+  padding: 12px 14px;
+  font-size: 17px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: var(--moby-bg);
+  border: 1px solid var(--moby-line);
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pill {
+  padding: 6px 16px;
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--moby-ink);
+  background: transparent;
+  border: 1px solid var(--moby-line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.pill:hover {
+  border-color: var(--moby-ink);
+}
+
+.pill:focus-visible {
+  outline: 2px solid var(--moby-green);
+  outline-offset: 2px;
+}
+
+.pillActive {
+  color: #fff;
+  background: var(--moby-green);
+  border-color: var(--moby-green-dark);
+}
+
+.pillActive:hover {
+  border-color: var(--moby-green-dark);
+}
+
+.twoButtons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.calculate {
+  margin-top: 6px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 2px solid var(--moby-line);
+}
+
+.stats > * + * {
+  border-left: 2px solid var(--moby-line);
+}

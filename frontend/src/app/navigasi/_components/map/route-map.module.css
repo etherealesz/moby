@@ -1,0 +1,128 @@
+.wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  overflow: hidden;
+}
+
+.wrapper :global(.leaflet-tile-pane) {
+  filter: grayscale(1) contrast(0.9) brightness(1.04);
+}
+
+.wrapper :global(.leaflet-control-attribution) {
+  font-size: 11px;
+  background: rgb(242 242 240 / 85%);
+}
+
+.picking :global(.leaflet-container) {
+  cursor: crosshair;
+}
+
+.marker {
+  display: grid !important;
+  place-items: center;
+  font-family: var(--font-archivo), sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  border: 2px solid var(--moby-bg);
+}
+
+.markerStart {
+  background: var(--moby-green);
+}
+
+.markerEnd {
+  background: var(--moby-ink);
+}
+
+.legend {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 700;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 22px;
+  font-size: 15px;
+  background: var(--moby-bg);
+  border: 1px solid var(--moby-line);
+}
+
+.legendTitle {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--moby-muted);
+  text-transform: uppercase;
+}
+
+.legendRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.legendLine {
+  width: 32px;
+  height: 6px;
+  background: var(--moby-green);
+}
+
+.legendLineMuted {
+  background: var(--moby-line);
+}
+
+.legendSquare {
+  width: 16px;
+  height: 16px;
+  background: var(--moby-ink);
+}
+
+.controls {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 700;
+  display: flex;
+  flex-direction: column;
+  background: var(--moby-bg);
+  border: 1px solid var(--moby-line);
+}
+
+.control {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 54px;
+  padding: 0;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--moby-ink);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.control + .control {
+  border-top: 1px solid var(--moby-line);
+}
+
+.control:hover {
+  background: var(--moby-panel);
+}
+
+.pickHint {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  z-index: 700;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--moby-green);
+  transform: translateX(-50%);
+}

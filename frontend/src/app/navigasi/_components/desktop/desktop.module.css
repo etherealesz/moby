@@ -1,0 +1,61 @@
+.body {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 480px minmax(0, 1fr);
+  min-height: calc(100dvh - var(--moby-header-h) - 84px);
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  background: var(--moby-panel);
+  border-right: 2px solid var(--moby-line);
+  --form-pad-x: 32px;
+}
+
+.sidebarStats {
+  margin-top: auto;
+}
+
+.mapArea {
+  position: relative;
+  min-height: 560px;
+}
+
+.mapFill {
+  position: absolute;
+  inset: 0;
+}
+
+.facilityBar {
+  position: absolute;
+  right: 24px;
+  bottom: 40px;
+  left: 24px;
+  z-index: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  background: var(--moby-bg);
+  border: 1px solid var(--moby-line);
+}
+
+.facilityName {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.facilityMeta {
+  margin: 0;
+  font-size: 16px;
+  color: var(--moby-ink-2);
+}
+
+.facilityActions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 12px;
+}
