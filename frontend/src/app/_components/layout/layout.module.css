@@ -1,0 +1,185 @@
+.frame {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  max-width: 1680px;
+  margin: 0 auto;
+  background: var(--moby-bg);
+}
+
+@media (min-width: 62em) {
+  .frame {
+    border-inline: 1px solid var(--moby-line-soft);
+  }
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 600;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 24px;
+  height: var(--moby-header-h);
+  padding-inline: var(--moby-gutter);
+  background: var(--moby-bg);
+  border-bottom: 2px solid var(--moby-line);
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.logo {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  overflow: hidden;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--moby-muted);
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.nav {
+  display: flex;
+  gap: 36px;
+}
+
+.navLink {
+  padding-block: 6px;
+  font-size: 17px;
+  color: var(--moby-ink);
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+  transition: color 0.15s;
+}
+
+.navLink:hover {
+  color: var(--moby-green);
+}
+
+.navLinkActive {
+  font-weight: 600;
+  color: var(--moby-green);
+  border-bottom-color: var(--moby-green);
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 18px;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 28px var(--moby-gutter);
+  border-top: 2px solid var(--moby-line);
+}
+
+.footerLogo {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.footerTag {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--moby-muted);
+  text-transform: uppercase;
+}
+
+.topBar {
+  position: sticky;
+  top: 0;
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: var(--moby-topbar-h);
+  padding-inline: 20px;
+  background: var(--moby-bg);
+  border-bottom: 2px solid var(--moby-line);
+}
+
+.topBarStart {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.topBarTitle {
+  overflow: hidden;
+  font-size: 17px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topBarLogo {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: inherit;
+  text-decoration: none;
+}
+
+.backButton {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-left: -8px;
+  padding: 0;
+  color: var(--moby-ink);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.backButton:focus-visible {
+  outline: 2px solid var(--moby-green);
+}
+
+.drawerNav {
+  display: flex;
+  flex-direction: column;
+}
+
+.drawerLink {
+  padding: 16px 4px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--moby-ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--moby-line-soft);
+}
+
+.drawerLinkActive {
+  color: var(--moby-green);
+}

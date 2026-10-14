@@ -1,0 +1,252 @@
+.eyebrow {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--moby-green);
+  text-transform: uppercase;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--moby-ink);
+  text-transform: uppercase;
+}
+
+.label {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--moby-muted);
+  text-transform: uppercase;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 28px;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--moby-green);
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btnPrimary {
+  color: #fff;
+  background: var(--moby-green);
+}
+
+.btnPrimary:hover {
+  background: var(--moby-green-dark);
+}
+
+.btnOutline {
+  color: var(--moby-ink);
+  background: transparent;
+  border-color: var(--moby-line);
+}
+
+.btnOutline:hover {
+  border-color: var(--moby-ink);
+}
+
+.btnBlock {
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.btnSmall {
+  min-height: 44px;
+  padding: 0 20px;
+  font-size: 16px;
+}
+
+.stripes {
+  position: relative;
+  overflow: hidden;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--moby-stripe-a) 0 18px,
+    var(--moby-stripe-b) 18px 36px
+  );
+}
+
+.stripesCaption {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 0 16px;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  color: var(--moby-muted);
+  text-align: center;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.barTrack {
+  flex: 1;
+  height: 10px;
+  background: var(--moby-line-soft);
+}
+
+.barFill {
+  height: 100%;
+  background: currentcolor;
+}
+
+.barValue {
+  min-width: 3ch;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--moby-ink);
+  text-align: right;
+}
+
+.toneGreen {
+  color: var(--moby-green);
+}
+
+.toneSage {
+  color: var(--moby-sage);
+}
+
+.toneGray {
+  color: var(--moby-gray);
+}
+
+.toneInk {
+  color: var(--moby-ink);
+}
+
+.swatch {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  background: currentcolor;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 16px;
+}
+
+.statStart {
+  align-items: flex-start;
+}
+
+.statValue {
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.statUnit {
+  margin-left: 4px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.box {
+  position: absolute;
+  border: 2px solid var(--moby-ink);
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.boxSelected {
+  border-color: var(--moby-green);
+}
+
+.boxLow {
+  border-style: dashed;
+  border-color: var(--moby-gray);
+}
+
+.boxLabel {
+  position: absolute;
+  bottom: 100%;
+  left: -2px;
+  display: flex;
+  gap: 8px;
+  padding: 4px 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  background: var(--moby-ink);
+}
+
+.boxSelected .boxLabel {
+  background: var(--moby-green);
+}
+
+.boxLow .boxLabel {
+  background: var(--moby-gray);
+}
+
+.countBadge {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 2;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #fff;
+  text-transform: uppercase;
+  background: var(--moby-green);
+}
+
+.desktopOnly {
+  display: none;
+}
+
+@media (min-width: 62em) {
+  .desktopOnly {
+    display: block;
+  }
+
+  .mobileOnly {
+    display: none;
+  }
+}
