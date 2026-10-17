@@ -14,7 +14,7 @@
 
 .headline {
   margin: 8px 0 12px;
-  font-size: clamp(44px, 4vw, 64px);
+  font-size: clamp(39px, 4vw, 56px);
   font-weight: 800;
   line-height: 1.02;
   letter-spacing: -0.04em;
@@ -23,7 +23,7 @@
 .paragraph {
   max-width: 40em;
   margin: 0;
-  font-size: 19px;
+  font-size: 17px;
   line-height: 1.65;
   color: var(--moby-ink-2);
 }

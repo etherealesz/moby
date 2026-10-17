@@ -11,7 +11,7 @@
 }
 
 .wrapper :global(.leaflet-control-attribution) {
-  font-size: 11px;
+  font-size: 10px;
   background: rgb(242 242 240 / 85%);
 }
 
@@ -23,7 +23,7 @@
   display: grid !important;
   place-items: center;
   font-family: var(--font-archivo), sans-serif;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
   color: #fff;
   border: 2px solid var(--moby-bg);
@@ -46,13 +46,13 @@
   flex-direction: column;
   gap: 12px;
   padding: 18px 22px;
-  font-size: 15px;
+  font-size: 13px;
   background: var(--moby-bg);
   border: 1px solid var(--moby-line);
 }
 
 .legendTitle {
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.14em;
   color: var(--moby-muted);
   text-transform: uppercase;
@@ -98,7 +98,7 @@
   height: 54px;
   padding: 0;
   font-family: inherit;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--moby-ink);
   background: none;
@@ -120,7 +120,7 @@
   left: 50%;
   z-index: 700;
   padding: 8px 14px;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   color: #fff;
   background: var(--moby-green);

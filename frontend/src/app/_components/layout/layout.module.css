@@ -36,7 +36,7 @@
 }
 
 .logo {
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.02em;
@@ -44,7 +44,7 @@
 
 .subtitle {
   overflow: hidden;
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.14em;
   color: var(--moby-muted);
   text-overflow: ellipsis;
@@ -59,7 +59,7 @@
 
 .navLink {
   padding-block: 6px;
-  font-size: 17px;
+  font-size: 15px;
   color: var(--moby-ink);
   text-decoration: none;
   border-bottom: 3px solid transparent;
@@ -93,12 +93,12 @@
 }
 
 .footerLogo {
-  font-size: 22px;
+  font-size: 19px;
   font-weight: 800;
 }
 
 .footerTag {
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.14em;
   color: var(--moby-muted);
   text-transform: uppercase;
@@ -127,14 +127,14 @@
 
 .topBarTitle {
   overflow: hidden;
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .topBarLogo {
-  font-size: 26px;
+  font-size: 23px;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: inherit;
@@ -165,7 +165,7 @@
 
 .drawerLink {
   padding: 16px 4px;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--moby-ink);
   text-decoration: none;

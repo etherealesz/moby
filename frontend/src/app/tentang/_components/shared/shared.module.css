@@ -35,7 +35,7 @@
 
 .devName {
   margin: 0 0 8px;
-  font-size: 22px;
+  font-size: 19px;
   font-weight: 800;
 }
 
@@ -50,7 +50,7 @@
 }
 
 .flowIndex {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.16em;
   color: var(--moby-green);
@@ -58,7 +58,7 @@
 
 .flowTitle {
   margin: 10px 0;
-  font-size: 22px;
+  font-size: 19px;
   font-weight: 800;
 }
 

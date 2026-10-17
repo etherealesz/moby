@@ -8,7 +8,7 @@
 
 .headline {
   margin: 0;
-  font-size: clamp(36px, 10vw, 52px);
+  font-size: clamp(32px, 10vw, 46px);
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.04em;
@@ -20,7 +20,7 @@
 
 .lead {
   margin: 0;
-  font-size: 17px;
+  font-size: 15px;
   line-height: 1.6;
   color: var(--moby-ink-2);
 }
@@ -68,11 +68,11 @@
 
 .categoryName {
   margin: 12px 0 0;
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 800;
 }
 
 .categoryMeta {
-  font-size: 14px;
+  font-size: 12px;
   color: var(--moby-muted);
 }

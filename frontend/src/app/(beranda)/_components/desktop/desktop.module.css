@@ -14,7 +14,7 @@
 
 .headline {
   margin: 0;
-  font-size: clamp(56px, 5.2vw, 84px);
+  font-size: clamp(49px, 5.2vw, 74px);
   font-weight: 800;
   line-height: 0.98;
   letter-spacing: -0.045em;
@@ -27,7 +27,7 @@
 .lead {
   max-width: 38em;
   margin: 0;
-  font-size: 20px;
+  font-size: 18px;
   line-height: 1.6;
   color: var(--moby-ink-2);
 }
@@ -65,7 +65,7 @@
 }
 
 .previewTitle {
-  font-size: 15px;
+  font-size: 13px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -74,7 +74,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.14em;
   color: var(--moby-green);
@@ -103,14 +103,14 @@
 
 .predictionName {
   margin: 0;
-  font-size: 34px;
+  font-size: 30px;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
 
 .predictionMeta {
   margin: 0 0 8px;
-  font-size: 17px;
+  font-size: 15px;
   color: var(--moby-ink-2);
 }
 
@@ -131,7 +131,7 @@
 }
 
 .sectionNote {
-  font-size: 16px;
+  font-size: 14px;
   color: var(--moby-muted);
 }
 
@@ -164,7 +164,7 @@
   align-items: center;
   gap: 14px;
   margin: 0 0 18px;
-  font-size: 24px;
+  font-size: 21px;
   font-weight: 800;
 }
 
@@ -174,7 +174,7 @@
   gap: 10px;
   margin: 0;
   padding: 0;
-  font-size: 17px;
+  font-size: 15px;
   color: var(--moby-ink-2);
   list-style: none;
 }
@@ -197,7 +197,7 @@
 }
 
 .moduleIndex {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.16em;
   color: var(--moby-green);
@@ -205,13 +205,13 @@
 
 .moduleTitle {
   margin: 10px 0 12px;
-  font-size: 26px;
+  font-size: 23px;
   font-weight: 800;
 }
 
 .moduleBody {
   margin: 0;
-  font-size: 17px;
+  font-size: 15px;
   line-height: 1.6;
   color: var(--moby-ink-2);
 }
@@ -225,7 +225,7 @@
 
 .closingTitle {
   margin: 0 0 18px;
-  font-size: 28px;
+  font-size: 25px;
   font-weight: 800;
   line-height: 1.2;
 }

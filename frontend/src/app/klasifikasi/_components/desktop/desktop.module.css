@@ -42,12 +42,12 @@
 
 .facilityName {
   margin: 4px 0 0;
-  font-size: 26px;
+  font-size: 23px;
   font-weight: 800;
 }
 
 .facilityMeta {
   margin: 0 0 12px;
-  font-size: 17px;
+  font-size: 15px;
   color: var(--moby-ink-2);
 }

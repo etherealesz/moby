@@ -15,7 +15,7 @@
 
 .title {
   margin: 10px 0 14px;
-  font-size: var(--help-title-size, 56px);
+  font-size: var(--help-title-size, 49px);
   font-weight: 800;
   line-height: 1.05;
   letter-spacing: -0.04em;
@@ -24,7 +24,7 @@
 .lead {
   max-width: 46em;
   margin: 0;
-  font-size: 19px;
+  font-size: 17px;
   line-height: 1.6;
   color: var(--moby-ink-2);
 }
@@ -61,7 +61,7 @@
 
 .stepNumber {
   display: block;
-  font-size: 30px;
+  font-size: 26px;
   font-weight: 800;
   line-height: 1;
   color: var(--moby-green);
@@ -69,12 +69,12 @@
 
 .stepsGrid .stepNumber {
   margin-bottom: 16px;
-  font-size: 40px;
+  font-size: 35px;
 }
 
 .stepTitle {
   margin: 0 0 8px;
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 700;
 }
 
@@ -131,7 +131,7 @@
 
 .pairTitle {
   margin: 0 0 6px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
 }
 
@@ -168,7 +168,7 @@
   justify-content: space-between;
   gap: 16px;
   padding: 24px 0;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   list-style: none;
   cursor: pointer;
@@ -180,7 +180,7 @@
 
 .faqQuestion::after {
   flex-shrink: 0;
-  font-size: 24px;
+  font-size: 21px;
   font-weight: 400;
   color: var(--moby-green);
   content: '+';
@@ -202,7 +202,7 @@
   width: 100%;
   padding: 12px 16px;
   font-family: inherit;
-  font-size: 17px;
+  font-size: 15px;
   color: var(--moby-ink);
   background: var(--moby-panel);
   border: 1px solid var(--moby-line);
@@ -215,6 +215,6 @@
 
 .searchMiss {
   margin-top: 6px;
-  font-size: 14px;
+  font-size: 12px;
   color: var(--moby-muted);
 }

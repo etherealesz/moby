@@ -1,6 +1,6 @@
 .eyebrow {
   margin: 0;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.16em;
   color: var(--moby-green);
@@ -9,7 +9,7 @@
 
 .sectionTitle {
   margin: 0;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.14em;
   color: var(--moby-ink);
@@ -17,7 +17,7 @@
 }
 
 .label {
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.14em;
   color: var(--moby-muted);
   text-transform: uppercase;
@@ -31,7 +31,7 @@
   min-height: 52px;
   padding: 0 28px;
   font-family: inherit;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   line-height: 1.2;
   text-decoration: none;
@@ -79,7 +79,7 @@
 .btnSmall {
   min-height: 44px;
   padding: 0 20px;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .stripes {
@@ -98,7 +98,7 @@
   display: grid;
   place-items: center;
   padding: 0 16px;
-  font-size: 13px;
+  font-size: 11px;
   letter-spacing: 0.14em;
   color: var(--moby-muted);
   text-align: center;
@@ -125,7 +125,7 @@
 
 .barValue {
   min-width: 3ch;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--moby-ink);
   text-align: right;
@@ -168,14 +168,14 @@
 }
 
 .statValue {
-  font-size: 40px;
+  font-size: 35px;
   font-weight: 800;
   line-height: 1;
 }
 
 .statUnit {
   margin-left: 4px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
 }
 
@@ -208,7 +208,7 @@
   display: flex;
   gap: 8px;
   padding: 4px 10px;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   color: #fff;
   white-space: nowrap;
@@ -229,7 +229,7 @@
   left: 24px;
   z-index: 2;
   padding: 6px 12px;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.1em;
   color: #fff;

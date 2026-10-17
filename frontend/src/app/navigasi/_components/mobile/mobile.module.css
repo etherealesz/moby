@@ -3,7 +3,7 @@
 }
 
 .city {
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.14em;
   color: var(--moby-muted);
   text-transform: uppercase;
@@ -25,12 +25,12 @@
 
 .facilityName {
   margin: 0;
-  font-size: 24px;
+  font-size: 21px;
   font-weight: 800;
 }
 
 .facilityMeta {
   margin: 0 0 16px;
-  font-size: 16px;
+  font-size: 14px;
   color: var(--moby-ink-2);
 }
