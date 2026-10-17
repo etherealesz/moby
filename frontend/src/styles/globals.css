@@ -23,7 +23,7 @@
   --moby-stripe-a: #d2d2cf;
   --moby-stripe-b: #dadad7;
   --moby-gutter: clamp(16px, 4vw, 48px);
-  --moby-header-h: 88px;
+  --moby-header-h: 72px;
   --moby-topbar-h: 64px;
 }
 

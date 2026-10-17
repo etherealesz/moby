@@ -28,7 +28,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 52px;
+  min-height: 46px;
   padding: 0 28px;
   font-family: inherit;
   font-size: 16px;
@@ -77,7 +77,7 @@
 }
 
 .btnSmall {
-  min-height: 44px;
+  min-height: 40px;
   padding: 0 20px;
   font-size: 14px;
 }
