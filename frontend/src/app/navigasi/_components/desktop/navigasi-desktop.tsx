@@ -1,4 +1,3 @@
-import { DesktopFooter } from '@/app/_components/layout/desktop-footer';
 import { DesktopHeader } from '@/app/_components/layout/desktop-header';
 import { PageFrame } from '@/app/_components/layout/page-frame';
 import type { RoutePlanner } from '../../_hooks/use-route-planner';
@@ -14,7 +13,6 @@ export function NavigasiDesktop({ planner }: { planner: RoutePlanner }) {
   return (
     <PageFrame
       header={<DesktopHeader active="/navigasi" subtitle="Navigasi rute" />}
-      footer={<DesktopFooter />}
     >
       <div className={classes.body}>
         <aside className={classes.sidebar}>

@@ -1,4 +1,4 @@
-import { Radio, Stack } from '@mantine/core';
+import { Group, Radio } from '@mantine/core';
 import { MutedLabel } from '@/app/_components/ui/text';
 import type { NetworkType } from '@/app/_models/moby';
 import { NETWORK_LABEL } from '@/app/_utils/format';
@@ -17,16 +17,16 @@ export function ModePicker({ value, onChange }: IModePickerProps) {
       onChange={(next) => onChange(next as NetworkType)}
       label={<MutedLabel>Mode perjalanan</MutedLabel>}
     >
-      <Stack gap={14} mt={14}>
+      <Group gap={28} mt={12}>
         {MODES.map((mode) => (
           <Radio
             key={mode}
             value={mode}
             label={NETWORK_LABEL[mode]}
-            size="md"
+            size="sm"
           />
         ))}
-      </Stack>
+      </Group>
     </Radio.Group>
   );
 }

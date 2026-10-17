@@ -6,8 +6,8 @@
 .block {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding: 28px var(--form-pad-x, 32px);
+  gap: 14px;
+  padding: 20px var(--form-pad-x, 28px);
 }
 
 .block + .block {
