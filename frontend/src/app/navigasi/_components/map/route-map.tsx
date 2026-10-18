@@ -18,6 +18,7 @@ import classes from './route-map.module.css';
 import 'leaflet/dist/leaflet.css';
 
 const ROUTE_COLOR = '#276b3f';
+const DEFAULT_CENTER: LatLon = [-6.2, 106.8456];
 
 const makeIcon = (label: string, className: string) =>
   L.divIcon({
@@ -31,7 +32,7 @@ const START_ICON = makeIcon('A', classes.markerStart);
 const END_ICON = makeIcon('B', classes.markerEnd);
 
 export interface IRouteMapProps {
-  start: LatLon;
+  start: LatLon | null;
   end: LatLon | null;
   path: LatLon[] | null;
   pickOnMap?: boolean;
@@ -48,11 +49,12 @@ function FitView({
   const map = useMap();
 
   useEffect(() => {
-    const points = path && path.length > 1 ? path : end ? [start, end] : null;
+    const points =
+      path && path.length > 1 ? path : start && end ? [start, end] : null;
     if (points) {
       map.fitBounds(L.latLngBounds(points), { padding: [72, 72], maxZoom: 17 });
     } else {
-      map.setView(start, 15);
+      map.setView(start ?? end ?? DEFAULT_CENTER, start || end ? 15 : 11);
     }
   }, [map, start, end, path]);
 
@@ -72,7 +74,7 @@ function ClickHandler({ onMapClick }: Pick<IRouteMapProps, 'onMapClick'>) {
   return null;
 }
 
-function Controls({ start }: { start: LatLon }) {
+function Controls({ start }: { start: LatLon | null }) {
   const map = useMap();
 
   return (
@@ -96,7 +98,8 @@ function Controls({ start }: { start: LatLon }) {
       <button
         type="button"
         className={classes.control}
-        onClick={() => map.setView(start, 16)}
+        onClick={() => start && map.setView(start, 16)}
+        disabled={!start}
         aria-label="Ke posisi saya"
       >
         GPS
@@ -135,7 +138,7 @@ export function RouteMap({
   return (
     <div className={clsx(classes.wrapper, pickOnMap && classes.picking)}>
       <MapContainer
-        center={start}
+        center={start ?? DEFAULT_CENTER}
         zoom={15}
         zoomControl={false}
         style={{ width: '100%', height: '100%' }}
@@ -161,7 +164,7 @@ export function RouteMap({
             }}
           />
         )}
-        <Marker position={start} icon={START_ICON} />
+        {start && <Marker position={start} icon={START_ICON} />}
         {end && <Marker position={end} icon={END_ICON} />}
       </MapContainer>
 

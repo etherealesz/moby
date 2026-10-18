@@ -1,71 +1,115 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import {
-  buildDummyRoute,
-  getFacilitiesForCategory,
-  sortByDistance,
-} from '@/app/_data/dummy-route';
-import { DUMMY_USER_POSITION } from '@/app/_data/facilities';
+import { useEffect, useState } from 'react';
+import { useGeolocation } from '@/app/_hooks/use-geolocation';
 import type {
   CategoryName,
   IRouteResult,
   LatLon,
   NetworkType,
 } from '@/app/_models/moby';
-
-const MY_LOCATION_LABEL = 'Lokasi Anda saat ini';
+import {
+  describeRouteError,
+  fetchRoute,
+  type ICandidateRoute,
+} from '@/app/_services/route';
 
 export interface IRoutePlannerOptions {
   initialCategory: CategoryName;
   initialFacilityId: number | null;
 }
 
+interface IRouteState {
+  key: string;
+  route: IRouteResult | null;
+  candidates: ICandidateRoute[];
+  error: string | null;
+}
+
 export function useRoutePlanner({
   initialCategory,
   initialFacilityId,
 }: IRoutePlannerOptions) {
+  const geo = useGeolocation();
   const [category, setCategory] = useState(initialCategory);
-  const [start, setStart] = useState<LatLon>(DUMMY_USER_POSITION);
-  const [startLabel, setStartLabel] = useState(MY_LOCATION_LABEL);
+  const [mapPoint, setMapPoint] = useState<LatLon | null>(null);
   const [pickOnMap, setPickOnMap] = useState(false);
   const [network, setNetwork] = useState<NetworkType>('walk');
   const [facilityId, setFacilityId] = useState(initialFacilityId);
   const [mobileStep, setMobileStep] = useState<'form' | 'map'>('form');
+  const [result, setResult] = useState<IRouteState | null>(null);
+  const [nearest, setNearest] = useState<IRouteState | null>(null);
+  const [attempt, setAttempt] = useState(0);
 
-  const facilities = useMemo(
-    () => sortByDistance(getFacilitiesForCategory(category), start),
-    [category, start]
-  );
+  const start = mapPoint ?? geo.fix?.position ?? null;
+  const baseKey = start ? `${start.join(',')}|${category}|${network}` : null;
+  const key = baseKey ? `${baseKey}|${facilityId ?? 'nearest'}` : null;
+
+  useEffect(() => {
+    if (!start || !key || !baseKey) {
+      return undefined;
+    }
+    const controller = new AbortController();
+    fetchRoute({ start, category, network, facilityId }, controller.signal)
+      .then(({ route, candidates }) => {
+        const state = { key, route, candidates, error: null };
+        setResult(state);
+        if (facilityId === null) {
+          setNearest({ ...state, key: baseKey });
+        }
+      })
+      .catch((cause: unknown) => {
+        if (!controller.signal.aborted) {
+          setResult({
+            key,
+            route: null,
+            candidates: [],
+            error: describeRouteError(cause),
+          });
+        }
+      });
+    return () => controller.abort();
+  }, [key, attempt]);
+
+  const current = result?.key === key ? result : null;
+  const loading = !!key && !current;
+  const route = current?.route ?? null;
+  const candidates = (
+    nearest?.key === baseKey ? nearest.candidates : (current?.candidates ?? [])
+  ).filter((candidate) => candidate.routeDistanceMeter !== null);
   const facility =
-    facilities.find((item) => item.id === facilityId) ?? facilities[0] ?? null;
+    route?.facility ??
+    candidates.find((candidate) => candidate.facility.id === facilityId)
+      ?.facility ??
+    null;
 
-  const [route, setRoute] = useState<IRouteResult | null>(() =>
-    facility ? buildDummyRoute(start, facility, network) : null
-  );
-
-  const resetRoute = () => setRoute(null);
+  const startLabel = mapPoint
+    ? `Titik peta ${mapPoint[0].toFixed(5)}, ${mapPoint[1].toFixed(5)}`
+    : geo.fix
+      ? `Lokasi Anda (akurasi ±${Math.round(geo.fix.accuracyMeter)} m)`
+      : geo.locating
+        ? 'Mencari lokasi Anda…'
+        : 'Lokasi belum tersedia';
 
   return {
     category,
     setCategory: (value: CategoryName) => {
       setCategory(value);
       setFacilityId(null);
-      resetRoute();
     },
-    facilities,
+    candidates,
     facility,
-    selectFacility: (id: number) => {
-      setFacilityId(id);
-      resetRoute();
-    },
+    facilityId: facility?.id ?? facilityId,
+    selectFacility: (id: number) => setFacilityId(id),
     start,
     startLabel,
+    locationError: mapPoint ? null : geo.error,
+    locating: geo.locating,
     applyMyLocation: () => {
-      setStart(DUMMY_USER_POSITION);
-      setStartLabel(MY_LOCATION_LABEL);
+      setMapPoint(null);
+      setFacilityId(null);
       setPickOnMap(false);
-      resetRoute();
+      geo.locate();
     },
     pickOnMap,
     togglePickOnMap: () => {
@@ -78,22 +122,20 @@ export function useRoutePlanner({
       if (!pickOnMap) {
         return;
       }
-      setStart([lat, lon]);
-      setStartLabel(`Titik peta ${lat.toFixed(5)}, ${lon.toFixed(5)}`);
+      setMapPoint([lat, lon]);
+      setFacilityId(null);
       setPickOnMap(false);
-      resetRoute();
     },
     network,
-    setNetwork: (value: NetworkType) => {
-      setNetwork(value);
-      resetRoute();
-    },
+    setNetwork,
     route,
+    loading,
+    error: current?.error ?? null,
     calculate: () => {
-      if (!facility) {
-        return;
+      if (current?.error) {
+        setResult(null);
+        setAttempt((value) => value + 1);
       }
-      setRoute(buildDummyRoute(start, facility, network));
       setMobileStep('map');
     },
     mobileStep,

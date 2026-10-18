@@ -45,7 +45,7 @@ export function RouteMapScreen({ planner }: { planner: RoutePlanner }) {
         <section className={classes.facility}>
           <h2 className={classes.facilityName}>{facility.name}</h2>
           <p className={classes.facilityMeta}>
-            {facility.address} · buka {facility.openHours}
+            {[facility.type, facility.address].filter(Boolean).join(' · ')}
           </p>
           {route ? (
             <button
@@ -60,8 +60,9 @@ export function RouteMapScreen({ planner }: { planner: RoutePlanner }) {
               type="button"
               className={primaryBlock}
               onClick={planner.calculate}
+              disabled={planner.loading}
             >
-              Hitung rute A*
+              {planner.loading ? 'Menghitung rute A*…' : 'Coba hitung ulang'}
             </button>
           )}
         </section>

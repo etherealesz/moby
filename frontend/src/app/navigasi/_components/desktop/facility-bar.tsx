@@ -11,11 +11,11 @@ export function FacilityBar({ facility }: { facility: IFacility }) {
   return (
     <div className={classes.facilityBar}>
       <div>
-        <h2 className={classes.facilityName}>
-          {facility.name} — {facility.address}
-        </h2>
+        <h2 className={classes.facilityName}>{facility.name}</h2>
         <p className={classes.facilityMeta}>
-          {facility.type} · buka {facility.openHours}
+          {[facility.type, facility.address, facility.city]
+            .filter(Boolean)
+            .join(' · ')}
         </p>
       </div>
       <div className={classes.facilityActions}>

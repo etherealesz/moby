@@ -37,7 +37,7 @@ export interface IFacility {
   type: FacilityType;
   address: string;
   city: string;
-  openHours: string;
+  openHours?: string;
   position: LatLon;
 }
 

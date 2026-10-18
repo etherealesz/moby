@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import { buttonClasses } from '@/app/_components/ui/link-button';
 import { MutedLabel } from '@/app/_components/ui/text';
 import { CATEGORY_NAMES } from '@/app/_models/moby';
+import { formatDistance } from '@/app/_utils/format';
 import type { RoutePlanner } from '../../_hooks/use-route-planner';
 import { ModePicker } from './mode-picker';
 import { PillGroup } from './pill-group';
@@ -14,10 +15,11 @@ const CATEGORY_OPTIONS = CATEGORY_NAMES.map((name) => ({
 }));
 
 export function RoutePlannerForm({ planner }: { planner: RoutePlanner }) {
-  const facilityOptions = planner.facilities.map((facility) => ({
-    value: facility.id,
-    label: facility.name,
+  const facilityOptions = planner.candidates.map((candidate) => ({
+    value: candidate.facility.id,
+    label: `${candidate.facility.name} · ${formatDistance(candidate.routeDistanceMeter ?? candidate.straightDistanceMeter)}`,
   }));
+  const notice = planner.locationError ?? planner.error;
   const outline = clsx(
     buttonClasses.base,
     buttonClasses.outline,
@@ -29,8 +31,18 @@ export function RoutePlannerForm({ planner }: { planner: RoutePlanner }) {
       <div className={classes.block}>
         <RouteEndpoints
           startLabel={planner.startLabel}
-          endLabel={planner.facility?.name ?? 'Belum ada fasilitas'}
+          endLabel={
+            planner.facility?.name ??
+            (planner.loading
+              ? 'Mencari fasilitas terdekat…'
+              : 'Belum ada fasilitas')
+          }
         />
+        {notice && (
+          <p className={classes.notice} role="alert">
+            {notice}
+          </p>
+        )}
 
         <MutedLabel>Kategori sampah</MutedLabel>
         <PillGroup
@@ -41,20 +53,29 @@ export function RoutePlannerForm({ planner }: { planner: RoutePlanner }) {
         />
 
         <MutedLabel>Fasilitas penerima terdekat</MutedLabel>
-        <PillGroup
-          label="Fasilitas penerima"
-          options={facilityOptions}
-          value={planner.facility?.id ?? null}
-          onChange={planner.selectFacility}
-        />
+        {facilityOptions.length > 0 ? (
+          <PillGroup
+            label="Fasilitas penerima"
+            options={facilityOptions}
+            value={planner.facilityId}
+            onChange={planner.selectFacility}
+          />
+        ) : (
+          <p className={classes.hint}>
+            {planner.loading
+              ? 'Menghitung rute A*…'
+              : 'Daftar muncul setelah lokasi awal tersedia.'}
+          </p>
+        )}
 
         <div className={classes.twoButtons}>
           <button
             type="button"
             className={outline}
             onClick={planner.applyMyLocation}
+            disabled={planner.locating}
           >
-            Pakai lokasi saya
+            {planner.locating ? 'Mencari lokasi…' : 'Pakai lokasi saya'}
           </button>
           <button
             type="button"
@@ -72,7 +93,7 @@ export function RoutePlannerForm({ planner }: { planner: RoutePlanner }) {
         <button
           type="button"
           onClick={planner.calculate}
-          disabled={!planner.facility}
+          disabled={planner.loading || (!planner.route && !planner.error)}
           className={clsx(
             buttonClasses.base,
             buttonClasses.primary,
@@ -80,7 +101,11 @@ export function RoutePlannerForm({ planner }: { planner: RoutePlanner }) {
             classes.calculate
           )}
         >
-          Hitung rute A*
+          {planner.loading
+            ? 'Menghitung rute A*…'
+            : planner.error
+              ? 'Coba hitung ulang'
+              : 'Lihat rute A*'}
         </button>
       </div>
     </div>

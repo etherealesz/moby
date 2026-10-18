@@ -23,6 +23,7 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['@mantine/core', '@mantine/hooks'],
   },
   devIndicators: false,
+  allowedDevOrigins: ['*.trycloudflare.com'],
 };
 
 export default withBundleAnalyzer(nextConfig);

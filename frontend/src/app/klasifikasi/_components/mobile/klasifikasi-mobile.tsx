@@ -6,6 +6,7 @@ import { StripedSurface } from '@/app/_components/ui/striped-surface';
 import { formatDistance } from '@/app/_utils/format';
 import type { ClassificationSession } from '../../_hooks/use-classification-session';
 import { CameraStatus } from '../shared/camera-status';
+import { CameraViewport } from '../shared/camera-viewport';
 import { DetectionList } from '../shared/detection-list';
 import { DisposalSteps } from '../shared/disposal-steps';
 import { buildRouteHref } from '../shared/route-href';
@@ -35,16 +36,22 @@ export function KlasifikasiMobile({
       }
     >
       <StripedSurface
-        caption={cameraActive ? 'Aliran kamera belakang' : 'Kamera dihentikan'}
+        caption={
+          cameraActive
+            ? session.frameSize
+              ? undefined
+              : 'Menyalakan kamera…'
+            : 'Kamera dihentikan'
+        }
         className={classes.stage}
       >
-        {cameraActive && (
+        <CameraViewport session={session}>
           <DetectionOverlay
             detections={detections}
             selectedId={session.selectedId}
             onSelect={session.setSelectedId}
           />
-        )}
+        </CameraViewport>
       </StripedSurface>
 
       <div className={classes.content}>
