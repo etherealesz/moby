@@ -62,22 +62,17 @@ class TemporalSmoother:
                 track = self._tracks[track_id]
                 self._smooth(track, box_array, probs_array, box.confidence)
 
-            outputs.append(
-                DSmoothedObject(
-                    track_id=track.track_id,
-                    box=tuple(float(v) for v in track.box),
-                    detection_confidence=track.detection_confidence,
-                    probabilities=tuple(float(v) for v in track.probabilities),
-                    label_index=track.label_index,
-                )
-            )
+            outputs.append(_to_smoothed_object(track))
 
         for track_id in list(self._tracks):
             if track_id in matched_track_ids:
                 continue
-            self._tracks[track_id].missed_frames += 1
-            if self._tracks[track_id].missed_frames > self.max_missed_frames:
+            track = self._tracks[track_id]
+            track.missed_frames += 1
+            if track.missed_frames > self.max_missed_frames:
                 del self._tracks[track_id]
+            else:
+                outputs.append(_to_smoothed_object(track))
 
         return outputs
 
@@ -154,6 +149,16 @@ class TemporalSmoother:
             track.label_index = candidate
             track.candidate_index = None
             track.candidate_frames = 0
+
+
+def _to_smoothed_object(track: DTrack) -> DSmoothedObject:
+    return DSmoothedObject(
+        track_id=track.track_id,
+        box=tuple(float(v) for v in track.box),
+        detection_confidence=track.detection_confidence,
+        probabilities=tuple(float(v) for v in track.probabilities),
+        label_index=track.label_index,
+    )
 
 
 def compute_iou(box_a: np.ndarray, box_b: np.ndarray) -> float:

@@ -64,11 +64,13 @@ def test_non_overlapping_detection_creates_new_track():
     assert result[1].label_index == 2
 
 
-def test_lost_track_is_removed_after_max_missed_frames():
+def test_lost_track_is_held_until_max_missed_frames():
     smoother = TemporalSmoother(max_missed_frames=1)
     smoother.update([box(0, 0, 50, 50)], [ANORGANIK])
-    smoother.update([], [])
-    smoother.update([], [])
+    held = smoother.update([], [])
+    assert [item.track_id for item in held] == [1]
+    assert held[0].box == pytest.approx((0.0, 0.0, 50.0, 50.0))
+    assert smoother.update([], []) == []
     result = smoother.update([box(0, 0, 50, 50)], [ANORGANIK])
     assert result[0].track_id == 2
 
