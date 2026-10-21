@@ -1,12 +1,14 @@
 import argparse
 import time
 from collections import Counter, defaultdict
+from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import cv2
 import numpy as np
 import torch
+from tqdm import tqdm
 from sklearn.metrics import (
     accuracy_score,
     confusion_matrix,
@@ -14,14 +16,18 @@ from sklearn.metrics import (
 )
 
 from core.config.settings import settings
-from core.constants.paths import PROJECT_ROOT, REPORTS_DIR
+from core.constants.paths import PROJECT_ROOT
 from core.constants.waste import WASTE_CATEGORY_LABELS
 from core.utils.device_helper import resolve_torch_device
 from modules.classification.services.image_preprocessor.service import ImagePreprocessor
 from modules.classification.services.waste_classifier.service import WasteClassifier
 from training.common import (
-    CLASSIFIER_WEIGHTS,
+    MANIFEST_CSV,
+    classifier_weights_path,
+    log_experiment,
+    manifest_clahe_baked,
     read_manifest,
+    report_dir,
     write_csv_report,
     write_json_report,
 )
@@ -30,26 +36,47 @@ from training.common import (
 def main() -> None:
     parser = argparse.ArgumentParser(description="Evaluasi MobileNetV4-Conv-S")
     parser.add_argument("--split", choices=["val", "test"], default="test")
-    parser.add_argument("--weights", default=str(CLASSIFIER_WEIGHTS))
+    parser.add_argument(
+        "--name", default=None, help="Kode eksperimen (mis. K1); bobot dan laporan per kode."
+    )
+    parser.add_argument("--weights", default=None, help="Bawaan: bobot milik --name.")
+    parser.add_argument("--manifest", type=Path, default=MANIFEST_CSV)
+    parser.add_argument(
+        "--clahe",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Bawaan: mengikuti pengaturan saat training (tersimpan di bobot).",
+    )
     parser.add_argument("--batch", type=int, default=64)
     parser.add_argument("--latency-samples", type=int, default=200)
     options = parser.parse_args()
+    weights = options.weights or str(classifier_weights_path(options.name))
+    clahe = (
+        options.clahe
+        if options.clahe is not None
+        else bool(torch.load(weights, map_location="cpu", weights_only=False).get("clahe", True))
+    )
 
-    rows = [row for row in read_manifest() if row["split"] == options.split]
+    rows = [row for row in read_manifest(options.manifest) if row["split"] == options.split]
     if not rows:
         raise SystemExit(f"Tidak ada data split '{options.split}' di manifest")
 
-    preprocessor = ImagePreprocessor()
-    classifier = WasteClassifier(weights_path=options.weights)
+    apply_clahe = clahe and not manifest_clahe_baked(options.manifest)
+    preprocessor = ImagePreprocessor() if apply_clahe else None
+    classifier = WasteClassifier(weights_path=weights)
 
-    images = [load_rgb(row["path"]) for row in rows]
-    enhanced = [preprocessor.process(image) for image in images]
+    images = [load_rgb(row["path"]) for row in tqdm(rows, desc="Baca citra")]
+    enhanced = (
+        [preprocessor.process(image) for image in tqdm(images, desc="CLAHE")]
+        if apply_clahe
+        else images
+    )
 
     classifier.predict(enhanced[: min(8, len(enhanced))])
 
     predictions = []
     batch_seconds = 0.0
-    for start in range(0, len(enhanced), options.batch):
+    for start in tqdm(range(0, len(enhanced), options.batch), desc="Prediksi (batch)"):
         batch = enhanced[start : start + options.batch]
         synchronize()
         started_at = time.perf_counter()
@@ -87,15 +114,20 @@ def main() -> None:
     }
 
     split = options.split
-    write_predictions(rows, predictions, split)
-    write_confusion_matrix(matrix, split)
-    write_per_subclass(rows, y_true, y_pred, split)
+    experiment = options.name
+    write_predictions(rows, predictions, split, experiment)
+    write_confusion_matrix(matrix, split, experiment)
+    write_per_subclass(rows, y_true, y_pred, split, experiment)
 
+    accuracy = float(accuracy_score(y_true, y_pred))
+    batched_ms = batch_seconds * 1000 / len(rows)
     report = write_json_report(
         f"classifier_evaluation_{split}.json",
         {
             "split": split,
-            "weights": options.weights,
+            "weights": weights,
+            "clahe": clahe,
+            "manifest": options.manifest.as_posix(),
             "images": len(rows),
             "accuracy": float(accuracy_score(y_true, y_pred)),
             "macro": {"precision": macro[0], "recall": macro[1], "f1": macro[2]},
@@ -112,12 +144,30 @@ def main() -> None:
             "inference": {
                 "device": resolve_torch_device(settings.classification.device),
                 "batch_size": options.batch,
-                "batched_ms_per_image": batch_seconds * 1000 / len(rows),
+                "batched_ms_per_image": batched_ms,
                 "single_image_ms": latency,
             },
         },
+        experiment,
     )
-    print(f"Akurasi {split}: {accuracy_score(y_true, y_pred):.4f}")
+    log_experiment(
+        {
+            "kode": experiment or "bawaan",
+            "tahap": "B-klasifikasi",
+            "langkah": "evaluasi",
+            "split": split,
+            "clahe": clahe,
+            "keterangan": f"manifest={options.manifest.parent.name}/{options.manifest.name}",
+            "accuracy": accuracy,
+            "macro_precision": float(macro[0]),
+            "macro_recall": float(macro[1]),
+            "macro_f1": float(macro[2]),
+            "ms_per_citra": latency["preprocess"]["mean"] + latency["classify"]["mean"],
+            "bobot": weights,
+            "laporan": report.as_posix(),
+        }
+    )
+    print(f"Akurasi {split}: {accuracy:.4f}  F1 makro: {macro[2]:.4f}")
     print(f"Laporan: {report}")
 
 
@@ -134,14 +184,14 @@ def synchronize() -> None:
 
 
 def measure_single_image_latency(
-    preprocessor: ImagePreprocessor,
+    preprocessor: ImagePreprocessor | None,
     classifier: WasteClassifier,
     images: list[np.ndarray],
 ) -> dict:
     preprocess_ms, classify_ms = [], []
-    for image in images:
+    for image in tqdm(images, desc="Latensi per citra"):
         started_at = time.perf_counter()
-        enhanced = preprocessor.process(image)
+        enhanced = preprocessor.process(image) if preprocessor else image
         preprocessed_at = time.perf_counter()
         classifier.predict([enhanced])
         synchronize()
@@ -164,7 +214,9 @@ def measure_single_image_latency(
     }
 
 
-def write_predictions(rows: list[dict], predictions, split: str) -> None:
+def write_predictions(
+    rows: list[dict], predictions, split: str, experiment: str | None = None
+) -> None:
     output = [
         {
             "path": row["path"],
@@ -180,10 +232,14 @@ def write_predictions(rows: list[dict], predictions, split: str) -> None:
         }
         for row, prediction in zip(rows, predictions)
     ]
-    write_csv_report(f"classifier_predictions_{split}.csv", output, list(output[0]))
+    write_csv_report(
+        f"classifier_predictions_{split}.csv", output, list(output[0]), experiment
+    )
 
 
-def write_confusion_matrix(matrix: np.ndarray, split: str) -> None:
+def write_confusion_matrix(
+    matrix: np.ndarray, split: str, experiment: str | None = None
+) -> None:
     write_csv_report(
         f"classifier_confusion_matrix_{split}.csv",
         [
@@ -191,6 +247,7 @@ def write_confusion_matrix(matrix: np.ndarray, split: str) -> None:
             for i, label in enumerate(WASTE_CATEGORY_LABELS)
         ],
         ["aktual", *WASTE_CATEGORY_LABELS],
+        experiment,
     )
 
     figure, axis = plt.subplots(figsize=(6, 5))
@@ -212,12 +269,15 @@ def write_confusion_matrix(matrix: np.ndarray, split: str) -> None:
             )
     figure.colorbar(image, ax=axis)
     figure.tight_layout()
-    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
-    figure.savefig(REPORTS_DIR / f"classifier_confusion_matrix_{split}.png", dpi=150)
+    figure.savefig(
+        report_dir(experiment) / f"classifier_confusion_matrix_{split}.png", dpi=150
+    )
     plt.close(figure)
 
 
-def write_per_subclass(rows: list[dict], y_true, y_pred, split: str) -> None:
+def write_per_subclass(
+    rows: list[dict], y_true, y_pred, split: str, experiment: str | None = None
+) -> None:
     groups: dict[tuple[str, str, str], list[tuple[int, int]]] = defaultdict(list)
     for row, true, pred in zip(rows, y_true, y_pred):
         groups[(row["kelas"], row["subkelas"], "")].append((true, pred))
@@ -240,6 +300,7 @@ def write_per_subclass(rows: list[dict], y_true, y_pred, split: str) -> None:
         f"classifier_per_subkelas_{split}.csv",
         output,
         ["kelas", "subkelas", "jenis_barang", "jumlah", "akurasi", "salah_terbanyak_ke"],
+        experiment,
     )
 
 

@@ -1,13 +1,15 @@
 import argparse
 import time
+from pathlib import Path
 import cv2
 import numpy as np
 import torch
+from tqdm import tqdm
 from matplotlib.figure import Figure
 from torch import nn
 from torch.utils.data import DataLoader, Dataset
 from torchvision.transforms import v2
-from core.constants.paths import PROJECT_ROOT, REPORTS_DIR
+from core.constants.paths import PROJECT_ROOT
 from core.constants.waste import WASTE_CATEGORY_LABELS
 from modules.classification.services.image_preprocessor.service import ImagePreprocessor
 from modules.classification.services.waste_classifier.utils import (
@@ -17,8 +19,12 @@ from modules.classification.services.waste_classifier.utils import (
     preprocess_crops,
 )
 from training.common import (
-    CLASSIFIER_WEIGHTS,
+    MANIFEST_CSV,
+    classifier_weights_path,
+    log_experiment,
+    manifest_clahe_baked,
     read_manifest,
+    report_dir,
     seed_everything,
     write_csv_report,
     write_json_report,
@@ -44,12 +50,14 @@ class WasteImageDataset(Dataset):
         mean: tuple[float, ...],
         std: tuple[float, ...],
         augment: bool,
+        clahe: bool = True,
     ) -> None:
         self._rows = rows
         self._image_size = image_size
         self._mean = mean
         self._std = std
         self._augment = augment
+        self._clahe = clahe
         self._preprocessor: ImagePreprocessor | None = None
         self._augmentation = v2.Compose(
             [
@@ -73,14 +81,16 @@ class WasteImageDataset(Dataset):
         return state
 
     def __getitem__(self, index: int) -> tuple[torch.Tensor, int]:
-        if self._preprocessor is None:
+        if self._clahe and self._preprocessor is None:
             self._preprocessor = ImagePreprocessor()
 
         row = self._rows[index]
         bgr = cv2.imdecode(
             np.fromfile(PROJECT_ROOT / row["path"], dtype=np.uint8), cv2.IMREAD_COLOR
         )
-        rgb = self._preprocessor.process(cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB))
+        rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+        if self._clahe:
+            rgb = self._preprocessor.process(rgb)
         label = WASTE_CATEGORY_LABELS.index(row["kelas"])
 
         if self._augment:
@@ -108,7 +118,26 @@ def main() -> None:
     )
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--limit", type=int, default=0, help="Untuk uji cepat saja.")
+    parser.add_argument(
+        "--name",
+        default=None,
+        help="Kode eksperimen (mis. K1). Bobot ke models/classifier/<kode>/, "
+        "laporan ke reports/eksperimen/<kode>/. Kosong = lokasi bawaan.",
+    )
+    parser.add_argument("--no-clahe", action="store_true", help="Latih tanpa CLAHE.")
+    parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=MANIFEST_CSV,
+        help="Manifest lain, mis. data/classification_crops/manifest.csv (eksperimen K4).",
+    )
+    parser.add_argument("--keterangan", default="", help="Catatan singkat eksperimen.")
     options = parser.parse_args()
+    clahe = not options.no_clahe
+    baked = manifest_clahe_baked(options.manifest)
+    if baked and options.no_clahe:
+        raise SystemExit("Manifest ini sudah melalui CLAHE; --no-clahe tidak berlaku.")
+    weights_path = classifier_weights_path(options.name)
 
     seed_everything(options.seed)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -116,12 +145,12 @@ def main() -> None:
     model = build_waste_classifier_model(pretrained=True).to(device)
     mean, std = get_normalization(model)
 
-    rows = read_manifest()
+    rows = read_manifest(options.manifest)
     train_rows = [row for row in rows if row["split"] == "train"]
     val_rows = [row for row in rows if row["split"] == "val"]
     if options.limit:
         train_rows, val_rows = train_rows[: options.limit], val_rows[: options.limit]
-    print(f"Data latih: {len(train_rows)}, data validasi: {len(val_rows)}")
+    print(f"Data latih: {len(train_rows)}, data validasi: {len(val_rows)}, CLAHE: {clahe}")
 
     loader_args = {
         "batch_size": options.batch,
@@ -130,13 +159,17 @@ def main() -> None:
         "persistent_workers": options.workers > 0,
     }
     train_loader = DataLoader(
-        WasteImageDataset(train_rows, options.image_size, mean, std, augment=True),
+        WasteImageDataset(
+            train_rows, options.image_size, mean, std, augment=True, clahe=clahe and not baked
+        ),
         shuffle=True,
         drop_last=len(train_rows) > options.batch,
         **loader_args,
     )
     val_loader = DataLoader(
-        WasteImageDataset(val_rows, options.image_size, mean, std, augment=False),
+        WasteImageDataset(
+            val_rows, options.image_size, mean, std, augment=False, clahe=clahe and not baked
+        ),
         shuffle=False,
         **loader_args,
     )
@@ -169,10 +202,14 @@ def main() -> None:
         for epoch in range(1, epochs + 1):
             started_at = time.perf_counter()
             current_lr = optimizer.param_groups[0]["lr"]
+            label = f"{phase} epoch {epoch}/{epochs}"
             train_loss, train_acc = train_one_epoch(
-                model, frozen, train_loader, criterion, optimizer, scaler, device
+                model, frozen, train_loader, criterion, optimizer, scaler, device,
+                desc=f"{label} latih",
             )
-            val_loss, val_acc = evaluate(model, val_loader, criterion, device)
+            val_loss, val_acc = evaluate(
+                model, val_loader, criterion, device, desc=f"{label} validasi"
+            )
             scheduler.step()
 
             row = {
@@ -190,12 +227,12 @@ def main() -> None:
 
             if val_acc > best["val_accuracy"]:
                 best = {"val_accuracy": val_acc, "epoch": epoch, "phase": phase}
-                save_checkpoint(model, options, mean, std, best)
+                save_checkpoint(model, options, mean, std, best, weights_path, clahe)
 
     history_path = write_csv_report(
-        "classifier_training_history.csv", history, HISTORY_COLUMNS
+        "classifier_training_history.csv", history, HISTORY_COLUMNS, options.name
     )
-    plot_history(history)
+    plot_history(history, options.name)
     report = write_json_report(
         "classifier_training.json",
         {
@@ -203,12 +240,28 @@ def main() -> None:
             "labels": list(WASTE_CATEGORY_LABELS),
             "train_images": len(train_rows),
             "val_images": len(val_rows),
-            "options": vars(options),
+            "clahe": clahe,
+            "options": {k: str(v) if isinstance(v, Path) else v for k, v in vars(options).items()},
             "best": best,
-            "weights": CLASSIFIER_WEIGHTS.as_posix(),
+            "weights": weights_path.as_posix(),
         },
+        options.name,
     )
-    print(f"Bobot terbaik: {CLASSIFIER_WEIGHTS} ({best})")
+    log_experiment(
+        {
+            "kode": options.name or "bawaan",
+            "tahap": "B-klasifikasi",
+            "langkah": "latih",
+            "split": "val",
+            "clahe": clahe,
+            "keterangan": options.keterangan
+            or f"unfreeze={options.unfreeze_stages}, manifest={options.manifest.name}",
+            "accuracy": best["val_accuracy"],
+            "bobot": weights_path.as_posix(),
+            "laporan": report.as_posix(),
+        }
+    )
+    print(f"Bobot terbaik: {weights_path} ({best})")
     print(f"Riwayat: {history_path}")
     print(f"Laporan: {report}")
 
@@ -246,13 +299,14 @@ def configure_trainable(model: nn.Module, unfreeze_stages: int) -> list[nn.Modul
     return frozen
 
 
-def train_one_epoch(model, frozen, loader, criterion, optimizer, scaler, device):
+def train_one_epoch(model, frozen, loader, criterion, optimizer, scaler, device, desc="latih"):
     model.train()
     for module in frozen:
         module.eval()
 
     total_loss, correct, count = 0.0, 0, 0
-    for images, labels in loader:
+    progress = tqdm(loader, desc=desc, leave=False, dynamic_ncols=True)
+    for images, labels in progress:
         images = images.to(device, non_blocking=True)
         labels = labels.to(device, non_blocking=True)
         optimizer.zero_grad(set_to_none=True)
@@ -266,14 +320,15 @@ def train_one_epoch(model, frozen, loader, criterion, optimizer, scaler, device)
         total_loss += loss.item() * labels.size(0)
         correct += (logits.argmax(dim=1) == labels).sum().item()
         count += labels.size(0)
+        progress.set_postfix(loss=f"{total_loss / count:.4f}", acc=f"{correct / count:.4f}")
     return total_loss / max(count, 1), correct / max(count, 1)
 
 
 @torch.inference_mode()
-def evaluate(model, loader, criterion, device):
+def evaluate(model, loader, criterion, device, desc="validasi"):
     model.eval()
     total_loss, correct, count = 0.0, 0, 0
-    for images, labels in loader:
+    for images, labels in tqdm(loader, desc=desc, leave=False, dynamic_ncols=True):
         images = images.to(device, non_blocking=True)
         labels = labels.to(device, non_blocking=True)
         with torch.autocast(device_type=device.type, enabled=device.type == "cuda"):
@@ -285,8 +340,10 @@ def evaluate(model, loader, criterion, device):
     return total_loss / max(count, 1), correct / max(count, 1)
 
 
-def save_checkpoint(model, options, mean, std, best: dict) -> None:
-    CLASSIFIER_WEIGHTS.parent.mkdir(parents=True, exist_ok=True)
+def save_checkpoint(
+    model, options, mean, std, best: dict, weights_path: Path, clahe: bool
+) -> None:
+    weights_path.parent.mkdir(parents=True, exist_ok=True)
     torch.save(
         {
             "model_name": MODEL_NAME,
@@ -298,12 +355,13 @@ def save_checkpoint(model, options, mean, std, best: dict) -> None:
             "epoch": best["epoch"],
             "phase": best["phase"],
             "val_accuracy": best["val_accuracy"],
+            "clahe": clahe,
         },
-        CLASSIFIER_WEIGHTS,
+        weights_path,
     )
 
 
-def plot_history(history: list[dict]) -> None:
+def plot_history(history: list[dict], experiment: str | None = None) -> None:
     if not history:
         return
     steps = range(1, len(history) + 1)
@@ -320,7 +378,7 @@ def plot_history(history: list[dict]) -> None:
         axis.legend()
         axis.grid(alpha=0.3)
     figure.tight_layout()
-    figure.savefig(REPORTS_DIR / "classifier_training_history.png", dpi=150)
+    figure.savefig(report_dir(experiment) / "classifier_training_history.png", dpi=150)
 
 
 if __name__ == "__main__":
