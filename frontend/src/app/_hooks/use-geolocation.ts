@@ -21,12 +21,28 @@ function describeGeoError(error: GeolocationPositionError | null) {
   return 'Lokasi tidak tersedia. Pilih titik di peta.';
 }
 
+function parseMockFix(): IGeoFix | null {
+  const [lat, lon] = (process.env.NEXT_PUBLIC_MOCK_LOCATION ?? '')
+    .split(',')
+    .map(Number);
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+    return null;
+  }
+  return { position: [lat, lon], accuracyMeter: 0 };
+}
+
+const MOCK_FIX = parseMockFix();
+
 export function useGeolocation(enabled = true) {
-  const [fix, setFix] = useState<IGeoFix | null>(null);
+  const [fix, setFix] = useState<IGeoFix | null>(MOCK_FIX);
   const [error, setError] = useState<string | null>(null);
   const [locating, setLocating] = useState(false);
 
   const locate = useCallback(() => {
+    if (MOCK_FIX) {
+      setFix(MOCK_FIX);
+      return;
+    }
     if (!navigator.geolocation) {
       setError(describeGeoError(null));
       return;
