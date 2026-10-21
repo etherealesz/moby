@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-10-17T16:38:12.982656",
+  "weights": "C:\\Users\\stefa\\Downloads\\Skripsi\\backend\\models\\detector_runs\\D1\\weights\\best.pt",
+  "data": "C:\\Users\\stefa\\Downloads\\Skripsi\\backend\\data\\detection\\data.yaml",
+  "classes": [
+    "sampah"
+  ],
+  "clahe": true,
+  "class": "sampah",
+  "test_ultralytics": {
+    "precision": 0.705048590226289,
+    "recall": 0.4554754872829497,
+    "map50": 0.4867918889276238,
+    "map50_95": 0.33916098181975896
+  },
+  "test_production_threshold": {
+    "images": 225,
+    "confidence_threshold": 0.5,
+    "iou_match_threshold": 0.5,
+    "true_positive": 301,
+    "false_positive": 119,
+    "false_negative": 397,
+    "precision": 0.7166666666666667,
+    "recall": 0.43123209169054444,
+    "f1": 0.5384615384615384,
+    "mean_iou_matched": 0.864677193308952,
+    "ms_per_image": {
+      "mean": 109.12475155546821,
+      "median": 42.03179999967688
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-10-17T16:40:30.462100",
+  "weights": "C:\\Users\\stefa\\Downloads\\Skripsi\\backend\\models\\detector_runs\\D2\\weights\\best.pt",
+  "data": "data/detection_noclahe/data.yaml",
+  "classes": [
+    "sampah"
+  ],
+  "clahe": false,
+  "class": "sampah",
+  "test_ultralytics": {
+    "precision": 0.6625442377485095,
+    "recall": 0.4484240687679083,
+    "map50": 0.49051322306471046,
+    "map50_95": 0.3471578361844287
+  },
+  "test_production_threshold": {
+    "images": 225,
+    "confidence_threshold": 0.5,
+    "iou_match_threshold": 0.5,
+    "true_positive": 277,
+    "false_positive": 100,
+    "false_negative": 421,
+    "precision": 0.7347480106100795,
+    "recall": 0.3968481375358166,
+    "f1": 0.5153488372093024,
+    "mean_iou_matched": 0.8768192560136124,
+    "ms_per_image": {
+      "mean": 117.1020546665952,
+      "median": 45.344900001509814
+    }
+  }
+}

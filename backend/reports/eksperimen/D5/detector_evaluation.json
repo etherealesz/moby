@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-10-21T07:33:11.012637",
+  "weights": "C:\\Users\\stefa\\Downloads\\Skripsi\\backend\\models\\detector_runs\\D5\\weights\\best.pt",
+  "data": "data/detection_d5/data.yaml",
+  "classes": [
+    "sampah"
+  ],
+  "clahe": true,
+  "class": "sampah",
+  "test_ultralytics": {
+    "precision": 0.8538285110004984,
+    "recall": 0.7395223786177447,
+    "map50": 0.8320527876058639,
+    "map50_95": 0.7006438871246778
+  },
+  "test_production_threshold": {
+    "images": 3387,
+    "confidence_threshold": 0.5,
+    "iou_match_threshold": 0.5,
+    "true_positive": 4589,
+    "false_positive": 735,
+    "false_negative": 1734,
+    "precision": 0.8619459053343351,
+    "recall": 0.7257630871421793,
+    "f1": 0.7880140808791963,
+    "mean_iou_matched": 0.9272815216565102,
+    "ms_per_image": {
+      "mean": 34.345328314145966,
+      "median": 16.5546999999151
+    }
+  }
+}

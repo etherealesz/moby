@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-10-18T00:05:24.701053",
+  "base_model": "yolo26n.pt",
+  "data": "data/detection_4kelas/data.yaml",
+  "classes": [
+    "Anorganik",
+    "B3",
+    "Organik",
+    "Residu"
+  ],
+  "clahe": true,
+  "epochs": 30,
+  "imgsz": 640,
+  "batch": 16,
+  "run_dir": "C:/Users/stefa/Downloads/Skripsi/backend/models/detector_runs/Y1",
+  "weights": "C:/Users/stefa/Downloads/Skripsi/backend/models/detector_runs/Y1/weights/best.pt",
+  "val": {
+    "precision": 0.8607276093798798,
+    "recall": 0.8355677879873397,
+    "map50": 0.9148863388151716,
+    "map50_95": 0.8522577232091125
+  }
+}

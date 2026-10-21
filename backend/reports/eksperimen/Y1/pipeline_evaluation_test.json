@@ -1,0 +1,83 @@
+{
+  "generated_at": "2026-10-18T00:12:15.694435",
+  "mode": "satu-tahap",
+  "weights": "C:\\Users\\stefa\\Downloads\\Skripsi\\backend\\models\\detector_runs\\Y1\\weights\\best.pt",
+  "clahe": true,
+  "split": "test",
+  "per_citra": {
+    "images": 4708,
+    "accuracy": 0.867034834324554,
+    "detection_rate": 0.9110025488530161,
+    "macro": {
+      "precision": 0.954580835004484,
+      "recall": 0.8673650208607837,
+      "f1": 0.9086567324188333
+    },
+    "per_class": {
+      "Anorganik": {
+        "precision": 0.9291338582677166,
+        "recall": 0.8723118279569892,
+        "f1": 0.8998266897746967
+      },
+      "B3": {
+        "precision": 0.9544592030360531,
+        "recall": 0.8547153780798641,
+        "f1": 0.9018377409233528
+      },
+      "Organik": {
+        "precision": 0.9716466739367503,
+        "recall": 0.84375,
+        "f1": 0.9031931069437404
+      },
+      "Residu": {
+        "precision": 0.9630836047774158,
+        "recall": 0.8986828774062816,
+        "f1": 0.929769392033543
+      }
+    },
+    "confusion_matrix": {
+      "columns": [
+        "Anorganik",
+        "B3",
+        "Organik",
+        "Residu",
+        "tidak terdeteksi"
+      ],
+      "rows_true_cols_pred": [
+        [
+          1298,
+          31,
+          11,
+          23,
+          125
+        ],
+        [
+          36,
+          1006,
+          8,
+          8,
+          119
+        ],
+        [
+          20,
+          7,
+          891,
+          3,
+          135
+        ],
+        [
+          43,
+          10,
+          7,
+          887,
+          40
+        ]
+      ]
+    },
+    "ms_per_image": {
+      "mean": 29.2708606847532,
+      "median": 27.09209999011364,
+      "p95": 50.466550001874545
+    }
+  }
+}

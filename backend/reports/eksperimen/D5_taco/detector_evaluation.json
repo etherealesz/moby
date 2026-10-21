@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-10-21T07:34:36.751907",
+  "weights": "models/detector_runs/D5/weights/best.pt",
+  "data": "data/detection/data.yaml",
+  "classes": [
+    "sampah"
+  ],
+  "clahe": true,
+  "class": "sampah",
+  "test_ultralytics": {
+    "precision": 0.7120091956146699,
+    "recall": 0.4326647564469914,
+    "map50": 0.4813594417363115,
+    "map50_95": 0.3520167112153275
+  },
+  "test_production_threshold": {
+    "images": 225,
+    "confidence_threshold": 0.5,
+    "iou_match_threshold": 0.5,
+    "true_positive": 240,
+    "false_positive": 42,
+    "false_negative": 458,
+    "precision": 0.851063829787234,
+    "recall": 0.3438395415472779,
+    "f1": 0.4897959183673469,
+    "mean_iou_matched": 0.8929998101932468,
+    "ms_per_image": {
+      "mean": 102.44989911108658,
+      "median": 40.61349999983577
+    }
+  }
+}

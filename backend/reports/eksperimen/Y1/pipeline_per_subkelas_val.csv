@@ -1,0 +1,18 @@
+kelas,subkelas,jumlah,akurasi,tidak_terdeteksi,salah_terbanyak_ke
+Anorganik,Kaca,298,0.8826,20,tidak terdeteksi
+Anorganik,Kertas dan Karton,297,0.8653,26,tidak terdeteksi
+Anorganik,Logam,296,0.9122,13,tidak terdeteksi
+Anorganik,Plastik,297,0.8788,26,tidak terdeteksi
+Anorganik,Tekstil,300,0.8033,44,tidak terdeteksi
+B3,Baterai,290,0.8828,27,tidak terdeteksi
+B3,Elektronik Kecil,299,0.7525,66,tidak terdeteksi
+B3,Kemasan Bertekanan,294,0.8741,23,tidak terdeteksi
+B3,Lampu,297,0.8687,31,tidak terdeteksi
+Organik,Daun dan Ranting,233,0.7296,54,tidak terdeteksi
+Organik,Kulit Buah,298,0.896,27,tidak terdeteksi
+Organik,Sisa Bahan Dapur,261,0.8161,42,tidak terdeteksi
+Organik,Sisa Makanan,262,0.9351,12,tidak terdeteksi
+Residu,Kemasan Saset,246,0.8537,15,tidak terdeteksi
+Residu,Produk Sanitasi Sekali Pakai,263,0.8631,11,Anorganik
+Residu,Puntung Rokok,253,0.9526,9,tidak terdeteksi
+Residu,Styrofoam,223,0.9013,11,tidak terdeteksi
