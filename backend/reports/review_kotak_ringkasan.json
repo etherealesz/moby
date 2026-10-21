@@ -1,0 +1,93 @@
+{
+  "generated_at": "2026-10-17T20:17:45.138738",
+  "folder": "C:/Users/stefa/Downloads/Skripsi/backend/data/raw_detection_review/dataset_final",
+  "total": {
+    "diterima": 2195,
+    "diubah": 275,
+    "dibuang": 74,
+    "digambar": 80
+  },
+  "per_subkelas": {
+    "Baterai": {
+      "diubah": 80,
+      "dibuang": 29,
+      "diterima": 70
+    },
+    "Daun dan Ranting": {
+      "diterima": 128,
+      "diubah": 22
+    },
+    "Elektronik Kecil": {
+      "diterima": 125,
+      "diubah": 25,
+      "dibuang": 15
+    },
+    "Kaca": {
+      "diubah": 10,
+      "diterima": 140,
+      "dibuang": 4
+    },
+    "Kemasan Bertekanan": {
+      "diubah": 21,
+      "diterima": 129,
+      "dibuang": 1
+    },
+    "Kemasan Saset": {
+      "diterima": 149,
+      "diubah": 1,
+      "dibuang": 1
+    },
+    "Kertas dan Karton": {
+      "diterima": 149,
+      "diubah": 1
+    },
+    "Kulit Buah": {
+      "diterima": 137,
+      "diubah": 13,
+      "dibuang": 3
+    },
+    "Lampu": {
+      "diterima": 126,
+      "diubah": 24,
+      "dibuang": 3
+    },
+    "Logam": {
+      "diterima": 148,
+      "diubah": 2,
+      "dibuang": 7
+    },
+    "Plastik": {
+      "diterima": 135,
+      "diubah": 15
+    },
+    "Produk Sanitasi Sekali Pakai": {
+      "diterima": 70,
+      "dibuang": 2,
+      "digambar": 80
+    },
+    "Puntung Rokok": {
+      "diterima": 144,
+      "diubah": 6
+    },
+    "Sisa Bahan Dapur": {
+      "diterima": 113,
+      "diubah": 37,
+      "dibuang": 1
+    },
+    "Sisa Makanan": {
+      "diterima": 147,
+      "diubah": 3,
+      "dibuang": 2
+    },
+    "Styrofoam": {
+      "dibuang": 6,
+      "diterima": 142,
+      "diubah": 8
+    },
+    "Tekstil": {
+      "diterima": 143,
+      "diubah": 7
+    }
+  },
+  "catatan": "diterima = kotak YOLO-World benar tanpa diubah; diubah = kotak YOLO-World dikoreksi manual; digambar = tanpa kotak awal, digambar manual."
+}

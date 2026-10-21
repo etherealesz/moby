@@ -1,0 +1,13 @@
+{
+  "generated_at": "2026-10-18T12:25:37.316096",
+  "detector_weights": "C:\\Users\\stefa\\Downloads\\Skripsi\\backend\\models\\detector_runs\\D4\\weights\\best.pt",
+  "clahe": true,
+  "confidence_threshold": 0.25,
+  "out": "C:/Users/stefa/Downloads/Skripsi/backend/data/raw_detection_review/_prebox_D4",
+  "per_split": {
+    "train": {
+      "ada_kotak": 21065,
+      "tanpa_kotak": 902
+    }
+  }
+}

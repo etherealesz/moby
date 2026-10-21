@@ -1,0 +1,151 @@
+{
+  "generated_at": "2026-10-20T20:08:48.217067",
+  "folder": "C:/Users/stefa/Downloads/Skripsi/backend/data/raw_detection_review/D5",
+  "total": {
+    "diterima": 10876,
+    "diubah": 2595,
+    "dibuang": 892,
+    "digambar": 505,
+    "otomatis": 7099
+  },
+  "per_split": {
+    "train": {
+      "diterima": 10876,
+      "diubah": 2595,
+      "dibuang": 892,
+      "digambar": 505,
+      "otomatis": 7099
+    }
+  },
+  "per_sumber_kotak": {
+    "D4": {
+      "diubah": 2278,
+      "dibuang": 549,
+      "diterima": 8540,
+      "otomatis": 7099
+    },
+    "manual": {
+      "digambar": 505,
+      "dibuang": 250
+    },
+    "yolo-world": {
+      "diterima": 2336,
+      "diubah": 317,
+      "dibuang": 93
+    }
+  },
+  "per_subkelas": {
+    "Baterai": {
+      "diubah": 305,
+      "dibuang": 146,
+      "diterima": 883,
+      "digambar": 18
+    },
+    "Daun dan Ranting": {
+      "diterima": 680,
+      "diubah": 191,
+      "dibuang": 47,
+      "digambar": 167
+    },
+    "Elektronik Kecil": {
+      "diterima": 1146,
+      "diubah": 156,
+      "dibuang": 64,
+      "digambar": 26
+    },
+    "Kaca": {
+      "diubah": 67,
+      "diterima": 1207,
+      "dibuang": 88,
+      "digambar": 29
+    },
+    "Kemasan Bertekanan": {
+      "diubah": 198,
+      "diterima": 1089,
+      "dibuang": 78,
+      "digambar": 9
+    },
+    "Kemasan Saset": {
+      "diterima": 1042,
+      "diubah": 46,
+      "dibuang": 53,
+      "digambar": 6
+    },
+    "Kertas dan Karton": {
+      "diterima": 1220,
+      "diubah": 56,
+      "dibuang": 97,
+      "digambar": 14
+    },
+    "Kulit Buah": {
+      "diterima": 1065,
+      "diubah": 268,
+      "dibuang": 46,
+      "digambar": 11
+    },
+    "Lampu": {
+      "diterima": 400,
+      "diubah": 199,
+      "dibuang": 40,
+      "otomatis": 736,
+      "digambar": 10
+    },
+    "Logam": {
+      "diterima": 295,
+      "diubah": 50,
+      "dibuang": 17,
+      "otomatis": 1021,
+      "digambar": 1
+    },
+    "Plastik": {
+      "diterima": 273,
+      "diubah": 164,
+      "otomatis": 911,
+      "dibuang": 34,
+      "digambar": 5
+    },
+    "Produk Sanitasi Sekali Pakai": {
+      "diterima": 193,
+      "dibuang": 23,
+      "digambar": 92,
+      "otomatis": 804,
+      "diubah": 117
+    },
+    "Puntung Rokok": {
+      "diterima": 164,
+      "diubah": 113,
+      "otomatis": 867,
+      "dibuang": 19,
+      "digambar": 19
+    },
+    "Sisa Bahan Dapur": {
+      "diterima": 446,
+      "diubah": 305,
+      "dibuang": 23,
+      "otomatis": 433,
+      "digambar": 14
+    },
+    "Sisa Makanan": {
+      "diterima": 216,
+      "diubah": 93,
+      "dibuang": 18,
+      "otomatis": 863,
+      "digambar": 34
+    },
+    "Styrofoam": {
+      "dibuang": 24,
+      "diterima": 324,
+      "diubah": 61,
+      "otomatis": 631,
+      "digambar": 1
+    },
+    "Tekstil": {
+      "diterima": 233,
+      "diubah": 206,
+      "otomatis": 833,
+      "dibuang": 75,
+      "digambar": 49
+    }
+  },
+  "catatan": "diterima = kotak awal benar tanpa diubah; diubah = kotak awal dikoreksi manual; digambar = tanpa kotak awal, digambar manual; dibuang = foto tidak dipakai untuk deteksi (foto asli tidak dihapus)."
+}
