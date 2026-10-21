@@ -82,8 +82,10 @@ Atur koneksi database di `files/config/local.yaml`.
 #    lalu menghapus tabel lama.
 uv run alembic upgrade head
 
-# 2. Isi kategori, subkategori, fasilitas, dan Facility_Category.
-#    Fasilitas dibaca dari data/geo/facilities.csv (format: docs/contoh/facilities.csv).
+# 2. Bersihkan data fasilitas SIPSN (data/raw/sipsn_2025/) ke data/geo/facilities.csv,
+#    lalu isi kategori, subkategori, fasilitas, dan Facility_Category.
+#    Laporan pembersihan: reports/fasilitas/clean_facilities.json.
+uv run python -m scripts.commands run clean_facilities
 uv run python -m scripts.commands run seed_database
 
 # 3. (Opsional) unduh ulang graf jalan OSM ke road_node/road_edge.
@@ -97,8 +99,8 @@ uv run python -m scripts.commands run extract_road_graph --network-type walk --p
 uv run fastapi dev main.py
 ```
 
-Endpoint klasifikasi membutuhkan `models/detector/best.pt` dan
-`models/classifier/best.pt` (hasil pelatihan di bawah). Tanpa bobot, endpoint
+Endpoint klasifikasi membutuhkan bobot di `classification.detector.weightsPath` dan
+`classification.classifier.weightsPath` (`files/config/local.yaml`). Tanpa bobot, endpoint
 mengembalikan 503 `DETECTOR_MODEL_NOT_AVAILABLE` / `CLASSIFIER_MODEL_NOT_AVAILABLE`;
 endpoint lain tetap berjalan.
 
@@ -118,8 +120,9 @@ Semua perintah dijalankan dari folder `backend/`. Setiap angka hasil ditulis ke
    uv run python -m training.build_dataset
    ```
 
-   Hasil: `data/classification/`, `data/manifest.csv`, `reports/dedup_report.json`,
-   `reports/kuota_kurang.csv` (jumlah foto mandiri yang masih harus diambil).
+   Hasil: `data/classification/`, `data/manifest.csv`.
+   Target bawaan 1750 citra/subkelas (`--target 2000` untuk kuota proposal penuh);
+   lihat `docs/penyesuaian-taksonomi.md`.
 4. Latih (fase beku backbone, lalu fine-tuning; AdamW, cross-entropy, AMP):
 
    ```bash

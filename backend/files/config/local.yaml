@@ -17,11 +17,11 @@ classification:
     clipLimit: 2.0
     tileGridSize: [8, 8]
   detector:
-    weightsPath: models/detector/best.pt
+    weightsPath: models/detector_runs/D4/weights/best.pt
     confidenceThreshold: 0.5
     imageSize: 640
   classifier:
-    weightsPath: models/classifier/best.pt
+    weightsPath: models/classifier/K1/best.pt
     imageSize: 224
   temporalSmoothing:
     alpha: 0.6
