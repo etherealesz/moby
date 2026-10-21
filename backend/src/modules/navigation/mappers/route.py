@@ -16,7 +16,7 @@ def map_route_result_to_response(result: DRouteResult) -> SRouteResponse:
         graph_edge_count=result.graph_edge_count,
         candidates=[
             SCandidateRouteResponse(
-                facility_id=candidate.facility_id,
+                facility=map_facility_to_response(candidate.facility),
                 straight_distance_meter=round(candidate.straight_distance_meter, 2),
                 route_distance_meter=(
                     round(candidate.route_distance_meter, 2)

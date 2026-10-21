@@ -9,3 +9,4 @@ class DFindRoute(BaseModel):
     longitude: float = Field(ge=-180, le=180)
     category: EWasteCategory
     network_type: ENetworkType
+    facility_id: int | None = None

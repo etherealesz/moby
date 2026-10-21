@@ -21,4 +21,5 @@ class FindRouteUseCase:
             user_lon=dto.longitude,
             category=dto.category,
             network_type=dto.network_type,
+            facility_id=dto.facility_id,
         )

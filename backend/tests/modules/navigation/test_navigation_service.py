@@ -206,8 +206,19 @@ async def test_find_route_picks_shortest_candidate():
         haversine_distance(BASE_LAT, BASE_LON, BASE_LAT, BASE_LON + 0.001)
     )
     assert result.distance_meter == pytest.approx(expected, rel=1e-3)
-    assert {c.facility_id for c in result.candidates} == {1, 2}
+    assert {c.facility.facility_id for c in result.candidates} == {1, 2}
     road_graph_repository.get_edges_in_bbox.assert_awaited_once()
+
+    chosen = await service.find_route(
+        BASE_LAT, BASE_LON, EWasteCategory.ANORGANIK, ENetworkType.WALK, facility_id=1
+    )
+    assert chosen.facility.facility_id == 1
+    assert [c.facility.facility_id for c in chosen.candidates] == [1]
+
+    with pytest.raises(FacilityNotFoundError):
+        await service.find_route(
+            BASE_LAT, BASE_LON, EWasteCategory.ANORGANIK, ENetworkType.WALK, facility_id=99
+        )
 
 
 async def test_find_route_without_facility_raises():

@@ -51,10 +51,13 @@ class NavigationService:
         user_lon: float,
         category: EWasteCategory,
         network_type: ENetworkType,
+        facility_id: int | None = None,
     ) -> DRouteResult:
         nav_config = settings.navigation
 
         facilities = await self.get_candidate_facilities(category)
+        if facility_id is not None:
+            facilities = [f for f in facilities if f.facility_id == facility_id]
         if not facilities:
             raise FacilityNotFoundError
 
@@ -86,7 +89,7 @@ class NavigationService:
             if goal is None or goal.distance_meter > nav_config.max_snap_distance_meter:
                 candidate_routes.append(
                     DCandidateRoute(
-                        facility_id=facility.facility_id,
+                        facility=facility,
                         straight_distance_meter=straight_distance,
                         route_distance_meter=None,
                         explored_nodes=0,
@@ -98,7 +101,7 @@ class NavigationService:
             result = self.astar(start.node_id, goal.node_id)
             candidate_routes.append(
                 DCandidateRoute(
-                    facility_id=facility.facility_id,
+                    facility=facility,
                     straight_distance_meter=straight_distance,
                     route_distance_meter=result.distance_meter if result.path else None,
                     explored_nodes=result.explored_nodes,

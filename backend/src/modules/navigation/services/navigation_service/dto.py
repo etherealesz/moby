@@ -12,7 +12,9 @@ class DSearchResult(BaseModel):
 
 
 class DCandidateRoute(BaseModel):
-    facility_id: int
+    model_config = {"arbitrary_types_allowed": True}
+
+    facility: Facility
     straight_distance_meter: float
     route_distance_meter: float | None
     explored_nodes: int

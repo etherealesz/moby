@@ -43,6 +43,7 @@ async def find_route(
         longitude=request.longitude,
         category=request.category,
         network_type=request.network_type,
+        facility_id=request.facility_id,
     )
 
     try:

@@ -5,7 +5,7 @@ from modules.facilities.schemas.facility import SFacilityResponse
 
 
 class SCandidateRouteResponse(BaseModel):
-    facility_id: int
+    facility: SFacilityResponse
     straight_distance_meter: float
     route_distance_meter: float | None
     explored_nodes: int

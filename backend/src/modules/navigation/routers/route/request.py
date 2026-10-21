@@ -11,3 +11,4 @@ class SRouteRequest(BaseModel):
     network_type: ENetworkType = Field(
         default=ENetworkType.WALK, examples=[ENetworkType.WALK]
     )
+    facility_id: int | None = Field(default=None, gt=0, examples=[None])
