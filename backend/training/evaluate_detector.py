@@ -9,11 +9,14 @@ from core.constants.waste import DETECTION_CLASS_NAME
 from modules.classification.services.image_preprocessor.service import ImagePreprocessor
 from modules.classification.services.object_detector.service import ObjectDetector
 from modules.classification.services.temporal_smoother.service import compute_iou
+from training.build_detection_dataset import read_dataset_info
 from training.common import (
     DETECTION_DIR,
-    DETECTOR_WEIGHTS,
+    DETECTOR_RUNS_DIR,
     IMAGE_EXTENSIONS,
     MULTI_OBJECT_TEST_DIR,
+    detector_weights_path,
+    log_experiment,
     write_json_report,
 )
 
@@ -23,45 +26,50 @@ IOU_MATCH_THRESHOLD = 0.5
 def main() -> None:
     parser = argparse.ArgumentParser(description="Evaluasi YOLO26")
     parser.add_argument("--data", default=str(DETECTION_DIR / "data.yaml"))
-    parser.add_argument("--weights", default=str(DETECTOR_WEIGHTS))
+    parser.add_argument(
+        "--name", default=None, help="Kode eksperimen (mis. D1); bobot dan laporan per kode."
+    )
+    parser.add_argument("--weights", default=None, help="Bawaan: bobot milik --name.")
     parser.add_argument("--imgsz", type=int, default=640)
     parser.add_argument("--batch", type=int, default=16)
     parser.add_argument("--device", default="0")
     parser.add_argument("--multi-object", action="store_true")
-    parser.add_argument(
-        "--test-images-have-clahe",
-        action=argparse.BooleanOptionalAction,
-        default=True,
-        help="Citra data/detection sudah melalui CLAHE (bawaan build_detection_dataset).",
-    )
     options = parser.parse_args()
+    weights = options.weights or str(detector_weights_path(options.name))
+    data_dir = Path(options.data).parent
+    info = read_dataset_info(Path(options.data))
+    clahe = bool(info["clahe"])
 
-    metrics = YOLO(options.weights).val(
+    metrics = YOLO(weights).val(
         data=options.data,
         split="test",
         imgsz=options.imgsz,
         batch=options.batch,
         device=options.device,
-        project=str(Path(options.weights).parent.parent / "detector_runs"),
-        name="test_eval",
+        project=str(DETECTOR_RUNS_DIR),
+        name=f"{options.name or 'bawaan'}_test",
         exist_ok=True,
     )
 
-    detector = ObjectDetector(weights_path=options.weights)
+    detector = ObjectDetector(weights_path=weights)
+    test_ultralytics = {
+        "precision": float(metrics.box.mp),
+        "recall": float(metrics.box.mr),
+        "map50": float(metrics.box.map50),
+        "map50_95": float(metrics.box.map),
+    }
     results = {
-        "weights": options.weights,
+        "weights": weights,
+        "data": options.data,
+        "classes": info["names"],
+        "clahe": clahe,
         "class": DETECTION_CLASS_NAME,
-        "test_ultralytics": {
-            "precision": float(metrics.box.mp),
-            "recall": float(metrics.box.mr),
-            "map50": float(metrics.box.map50),
-            "map50_95": float(metrics.box.map),
-        },
+        "test_ultralytics": test_ultralytics,
         "test_production_threshold": evaluate_folder(
             detector,
-            DETECTION_DIR / "images" / "test",
-            DETECTION_DIR / "labels" / "test",
-            apply_clahe=not options.test_images_have_clahe,
+            data_dir / "images" / "test",
+            data_dir / "labels" / "test",
+            apply_clahe=False,
         ),
     }
 
@@ -70,10 +78,28 @@ def main() -> None:
             detector,
             MULTI_OBJECT_TEST_DIR / "images",
             MULTI_OBJECT_TEST_DIR / "labels",
-            apply_clahe=True,
+            apply_clahe=clahe,
         )
 
-    report = write_json_report("detector_evaluation.json", results)
+    report = write_json_report("detector_evaluation.json", results, options.name)
+    production = results["test_production_threshold"]
+    log_experiment(
+        {
+            "kode": options.name or "bawaan",
+            "tahap": "A-deteksi" if len(info["names"]) == 1 else "D-yolo-4-kelas",
+            "langkah": "evaluasi",
+            "split": "test",
+            "clahe": clahe,
+            "keterangan": f"lokalisasi (tanpa melihat kelas), {len(info['names'])} kelas",
+            **test_ultralytics,
+            "ms_per_citra": production["ms_per_image"]["mean"],
+            "bobot": weights,
+            "laporan": report.as_posix(),
+        }
+    )
+    print(
+        f"mAP50 {test_ultralytics['map50']:.4f}  mAP50-95 {test_ultralytics['map50_95']:.4f}"
+    )
     print(f"Laporan: {report}")
 
 

@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-10-17T15:23:52.749010",
+  "out": "data/detection_noclahe",
+  "clahe": false,
+  "per_sumber": {
+    "taco": {
+      "citra": 1500,
+      "tanpa_label": 0,
+      "label_tidak_valid": 0,
+      "duplikat_md5": 0,
+      "dipakai": 1500,
+      "kotak": 4784
+    }
+  },
+  "per_split": {
+    "train": {
+      "images": 1050,
+      "boxes": 3343
+    },
+    "val": {
+      "images": 225,
+      "boxes": 743
+    },
+    "test": {
+      "images": 225,
+      "boxes": 698
+    }
+  }
+}

@@ -1,11 +1,13 @@
 import argparse
 import hashlib
+import json
 import random
 import shutil
 from collections import defaultdict
 from pathlib import Path
 import cv2
 import numpy as np
+from tqdm import tqdm
 from core.constants.waste import DETECTION_CLASS_NAME
 from modules.classification.services.image_preprocessor.service import ImagePreprocessor
 from training.common import (
@@ -24,52 +26,54 @@ def main() -> None:
     parser.add_argument("--no-clahe", action="store_true")
     parser.add_argument("--keep-unlabeled", action="store_true")
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--out",
+        type=Path,
+        default=DETECTION_DIR,
+        help="Folder keluaran, mis. data/detection_noclahe untuk eksperimen tanpa CLAHE.",
+    )
     options = parser.parse_args()
+    out_dir = options.out
 
     preprocessor = None if options.no_clahe else ImagePreprocessor()
     samples, stats = collect_samples(options.raw_dir, options.keep_unlabeled)
 
-    rng = random.Random(options.seed)
-    samples.sort(key=lambda sample: sample["md5"])
-    rng.shuffle(samples)
-    n_train = round(len(samples) * SPLIT_RATIOS[0])
-    n_val = round(len(samples) * SPLIT_RATIOS[1])
-    split_of = (
-        ["train"] * n_train
-        + ["val"] * n_val
-        + ["test"] * (len(samples) - n_train - n_val)
-    )
+    samples, split_of = split_per_source(samples, options.seed)
 
-    if DETECTION_DIR.exists():
-        shutil.rmtree(DETECTION_DIR)
+    if out_dir.exists():
+        shutil.rmtree(out_dir)
     for split in SPLITS:
-        (DETECTION_DIR / "images" / split).mkdir(parents=True, exist_ok=True)
-        (DETECTION_DIR / "labels" / split).mkdir(parents=True, exist_ok=True)
+        (out_dir / "images" / split).mkdir(parents=True, exist_ok=True)
+        (out_dir / "labels" / split).mkdir(parents=True, exist_ok=True)
 
     split_stats: dict[str, dict[str, int]] = defaultdict(
         lambda: {"images": 0, "boxes": 0}
     )
-    for sample, split in zip(samples, split_of):
-        image_target = DETECTION_DIR / "images" / split / f"{sample['md5']}.jpg"
-        label_target = DETECTION_DIR / "labels" / split / f"{sample['md5']}.txt"
+    for sample, split in tqdm(
+        zip(samples, split_of), total=len(samples), desc=f"Dataset deteksi -> {out_dir.name}"
+    ):
+        image_target = out_dir / "images" / split / f"{sample['md5']}.jpg"
+        label_target = out_dir / "labels" / split / f"{sample['md5']}.txt"
         write_image(sample["image"], image_target, preprocessor)
         label_target.write_text("\n".join(sample["boxes"]) + "\n", encoding="utf-8")
         split_stats[split]["images"] += 1
         split_stats[split]["boxes"] += len(sample["boxes"])
 
-    yaml_path = DETECTION_DIR / "data.yaml"
+    yaml_path = out_dir / "data.yaml"
     yaml_path.write_text(
-        f"path: {DETECTION_DIR.as_posix()}\n"
+        f"path: {out_dir.resolve().as_posix()}\n"
         "train: images/train\n"
         "val: images/val\n"
         "test: images/test\n"
         f"names:\n  0: {DETECTION_CLASS_NAME}\n",
         encoding="utf-8",
     )
+    write_dataset_info(out_dir, clahe=preprocessor is not None, names=[DETECTION_CLASS_NAME])
 
     report = write_json_report(
-        "detection_dataset.json",
+        f"detection_dataset_{out_dir.name}.json",
         {
+            "out": out_dir.as_posix(),
             "clahe": preprocessor is not None,
             "per_sumber": stats,
             "per_split": split_stats,
@@ -122,11 +126,30 @@ def collect_samples(raw_dir: Path, keep_unlabeled: bool) -> tuple[list[dict], di
                 continue
             seen_md5.add(md5)
 
-            samples.append({"image": image_path, "md5": md5, "boxes": boxes})
+            samples.append(
+                {"image": image_path, "md5": md5, "boxes": boxes, "source": source}
+            )
             stats[source]["dipakai"] += 1
             stats[source]["kotak"] += len(boxes)
 
     return samples, dict(stats)
+
+
+def split_per_source(samples: list[dict], seed: int) -> tuple[list[dict], list[str]]:
+    """Split 70:15:15 dilakukan terpisah untuk tiap sumber dengan seed yang sama, sehingga
+    split sebuah sumber (mis. TACO) tidak berubah ketika sumber lain ditambahkan."""
+    ordered: list[dict] = []
+    split_of: list[str] = []
+    for source in sorted({sample["source"] for sample in samples}):
+        group = sorted((s for s in samples if s["source"] == source), key=lambda s: s["md5"])
+        random.Random(seed).shuffle(group)
+        n_train = round(len(group) * SPLIT_RATIOS[0])
+        n_val = round(len(group) * SPLIT_RATIOS[1])
+        ordered += group
+        split_of += (
+            ["train"] * n_train + ["val"] * n_val + ["test"] * (len(group) - n_train - n_val)
+        )
+    return ordered, split_of
 
 
 def find_label(image_path: Path) -> Path | None:
@@ -165,6 +188,21 @@ def read_single_class_boxes(label_path: Path) -> list[str] | None:
             return None
         boxes.append(f"0 {cx:.6f} {cy:.6f} {w:.6f} {h:.6f}")
     return boxes
+
+
+def write_dataset_info(out_dir: Path, clahe: bool, names: list[str]) -> None:
+    """Dibaca train/evaluate agar tahu apakah citra dataset ini sudah melalui CLAHE."""
+    (out_dir / "dataset_info.json").write_text(
+        json.dumps({"clahe": clahe, "names": names}, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+
+def read_dataset_info(data_yaml: Path) -> dict:
+    info_path = Path(data_yaml).parent / "dataset_info.json"
+    if not info_path.exists():
+        return {"clahe": True, "names": [DETECTION_CLASS_NAME]}
+    return json.loads(info_path.read_text(encoding="utf-8"))
 
 
 def write_image(
