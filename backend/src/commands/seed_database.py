@@ -190,14 +190,15 @@ async def _seed_facilities(session: DatabaseMasterSession, csv_path: Path) -> No
     await session.execute(stmt)
 
     facility_ids = [row["facility_id"] for row in facilities]
-    await session.execute(
-        delete(FacilityCategory).where(FacilityCategory.facility_id.in_(facility_ids))
+    await session.execute(delete(FacilityCategory))
+    removed = await session.execute(
+        delete(Facility).where(Facility.facility_id.not_in(facility_ids))
     )
     await session.execute(insert(FacilityCategory).values(facility_categories))
 
     logger.info(
-        f"Facility: {len(facilities)} baris, Facility_Category: "
-        f"{len(facility_categories)} baris"
+        f"Facility: {len(facilities)} baris ({removed.rowcount} lama dihapus), "
+        f"Facility_Category: {len(facility_categories)} baris"
     )
 
 

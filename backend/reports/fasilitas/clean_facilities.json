@@ -1,0 +1,71 @@
+{
+  "dibuat": "2026-10-17T19:42:17",
+  "sumber": "C:\\Users\\stefa\\Downloads\\Skripsi\\backend\\data\\raw\\sipsn_2025",
+  "keluaran": "C:\\Users\\stefa\\Downloads\\Skripsi\\backend\\data\\geo\\facilities.csv",
+  "jumlah_mentah": {
+    "bank_sampah.txt": 10136,
+    "tps3r.txt": 2100,
+    "tpatpst.txt": 343
+  },
+  "dibuang": {
+    "di_luar_wilayah_studi": 143,
+    "duplikat_nama_berdekatan": 7,
+    "jenis_tidak_dipakai": 175,
+    "kota_sumber_di_luar_wilayah_studi": 10156
+  },
+  "jumlah_bersih": 2098,
+  "per_tipe": {
+    "Bank Sampah": 2010,
+    "TPS3R": 84,
+    "TPST": 1,
+    "TPA": 3
+  },
+  "per_kota": {
+    "Kota Adm. Jakarta Barat": 396,
+    "Kota Adm. Jakarta Pusat": 367,
+    "Kota Adm. Jakarta Selatan": 347,
+    "Kota Adm. Jakarta Timur": 148,
+    "Kota Adm. Jakarta Utara": 333,
+    "Kota Bekasi": 138,
+    "Kota Depok": 287,
+    "Kota Tangerang": 82
+  },
+  "per_kota_tipe": {
+    "Kota Adm. Jakarta Pusat": {
+      "Bank Sampah": 365,
+      "TPS3R": 2
+    },
+    "Kota Adm. Jakarta Utara": {
+      "Bank Sampah": 329,
+      "TPS3R": 4
+    },
+    "Kota Adm. Jakarta Barat": {
+      "Bank Sampah": 349,
+      "TPS3R": 47
+    },
+    "Kota Adm. Jakarta Selatan": {
+      "Bank Sampah": 346,
+      "TPS3R": 1
+    },
+    "Kota Adm. Jakarta Timur": {
+      "Bank Sampah": 144,
+      "TPS3R": 4
+    },
+    "Kota Tangerang": {
+      "Bank Sampah": 62,
+      "TPS3R": 19,
+      "TPA": 1
+    },
+    "Kota Depok": {
+      "Bank Sampah": 286,
+      "TPA": 1
+    },
+    "Kota Bekasi": {
+      "Bank Sampah": 129,
+      "TPS3R": 7,
+      "TPST": 1,
+      "TPA": 1
+    }
+  },
+  "kota_sumber_berbeda": 73
+}
