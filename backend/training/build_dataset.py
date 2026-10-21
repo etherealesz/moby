@@ -9,7 +9,8 @@ from dataclasses import dataclass
 from pathlib import Path
 import cv2
 import numpy as np
-from core.constants.paths import PROJECT_ROOT
+from tqdm import tqdm
+from core.constants.paths import DOCS_REPORTS_DIR, PROJECT_ROOT
 from training.common import (
     CLASSIFICATION_DIR,
     IMAGE_EXTENSIONS,
@@ -19,8 +20,11 @@ from training.common import (
     RAW_MAPPING_CSV,
     SPLIT_RATIOS,
     SPLITS,
+    SUBCLASS_TARGET,
+    SUBCLASSES,
     TAXONOMY,
     TAXONOMY_BY_ITEM,
+    scaled_quotas,
     slugify,
     write_csv_report,
     write_json_report,
@@ -48,6 +52,18 @@ def main() -> None:
         default=6,
         help="Jarak Hamming pHash maksimum untuk dianggap hampir sama (0..64).",
     )
+    parser.add_argument(
+        "--target",
+        type=int,
+        default=SUBCLASS_TARGET,
+        help="Citra per subkelas; kuota jenis barang diskalakan dari desain 2000.",
+    )
+    parser.add_argument(
+        "--isi-augmentasi",
+        action="store_true",
+        help="Tutup kekurangan subkelas dengan augmentasi offline dari citra train "
+        "(hanya split train; val/test tetap citra asli).",
+    )
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--workers", type=int, default=8)
     options = parser.parse_args()
@@ -56,14 +72,29 @@ def main() -> None:
     print(f"Kandidat dari raw_mapping: {len(candidates)} file")
 
     with ThreadPoolExecutor(max_workers=options.workers) as pool:
-        list(pool.map(compute_hashes, candidates))
+        list(tqdm(pool.map(compute_hashes, candidates), total=len(candidates), desc="Hash MD5/pHash"))
 
     kept, stats = deduplicate(candidates, options.phash_threshold)
-    selected, shortages = select_by_quota(kept, options.seed)
+    selected, shortages = select_by_quota(kept, options.seed, options.target)
     rows = write_dataset(selected, options.seed)
+    augmented = (
+        augment_to_target(rows, options.target, options.seed) if options.isi_augmentasi else []
+    )
+    if augmented:
+        write_manifest(rows + augmented)
+        write_csv_report(
+            "augmentasi_offline.csv",
+            [{k: r[k] for k in AUGMENT_REPORT_COLUMNS} for r in augmented],
+            AUGMENT_REPORT_COLUMNS,
+            directory=DOCS_REPORTS_DIR,
+        )
+        print(f"Augmentasi offline (train saja): {len(augmented)} citra, "
+              f"rincian di docs/reports/augmentasi_offline.csv")
+        rows = rows + augmented
 
     for row in rows:
-        stats[row["sumber"]]["dipakai"] += 1
+        if row["sumber"] != AUGMENT_SOURCE:
+            stats[row["sumber"]]["dipakai"] += 1
 
     dedup_path = write_json_report(
         "dedup_report.json",
@@ -75,22 +106,25 @@ def main() -> None:
                 for key in next(iter(stats.values()), {})
             },
         },
+        directory=DOCS_REPORTS_DIR,
     )
     shortage_path = write_csv_report(
         "kuota_kurang.csv",
         shortages,
-        ["kelas", "subkelas", "jenis_barang", "kuota", "tersedia", "kurang"],
+        ["kelas", "subkelas", "jenis_barang", "kuota", "tersedia", "dipakai", "kurang"],
+        directory=DOCS_REPORTS_DIR,
     )
 
     split_counts = Counter((row["split"], row["kelas"]) for row in rows)
-    print(f"Manifest: {MANIFEST_CSV} ({len(rows)} citra)")
+    print(f"Manifest: {MANIFEST_CSV} ({len(rows)} citra, target {options.target}/subkelas)")
     for split in SPLITS:
         per_class = {k: v for (s, k), v in sorted(split_counts.items()) if s == split}
         print(f"  {split}: {per_class}")
     print(f"Laporan dedup: {dedup_path}")
     print(
         f"Kekurangan kuota: {shortage_path} "
-        f"({sum(s['kurang'] for s in shortages)} citra kurang)"
+        f"({sum(s['kurang'] for s in shortages if s['jenis_barang'] == SUBCLASS_ROW)} "
+        "citra kurang setelah ditutup jenis lain dalam subkelas)"
     )
 
 
@@ -230,30 +264,67 @@ def near_duplicate_pairs(
     return neighbors
 
 
+SUBCLASS_ROW = "(subkelas)"
+
+
 def select_by_quota(
     kept: list[Candidate],
     seed: int,
+    target: int,
 ) -> tuple[dict[str, list[Candidate]], list[dict]]:
+    """Ambil kuota tiap jenis barang; kekurangan suatu jenis ditutup jenis lain yang
+    berlebih dalam subkelas yang sama (bergiliran), tidak pernah dengan augmentasi."""
     by_item: dict[str, list[Candidate]] = defaultdict(list)
     for candidate in kept:
         by_item[candidate.jenis_barang].append(candidate)
 
+    quotas = scaled_quotas(target)
     rng = random.Random(seed)
-    selected: dict[str, list[Candidate]] = {}
-    shortages: list[dict] = []
+    pools: dict[str, list[Candidate]] = {}
     for item in TAXONOMY:
         pool = sorted(by_item.get(item.jenis_barang, []), key=lambda c: c.md5)
         rng.shuffle(pool)
-        selected[item.jenis_barang] = pool[: item.kuota]
-        if len(pool) < item.kuota:
+        pools[item.jenis_barang] = pool
+
+    selected: dict[str, list[Candidate]] = {}
+    shortages: list[dict] = []
+    for kelas, subkelas in SUBCLASSES:
+        items = [i.jenis_barang for i in TAXONOMY if i.subkelas == subkelas]
+        taken = {name: min(len(pools[name]), quotas[name]) for name in items}
+        deficit = target - sum(taken.values())
+        while deficit > 0:
+            spare = [name for name in items if taken[name] < len(pools[name])]
+            if not spare:
+                break
+            for name in spare[:deficit]:
+                taken[name] += 1
+                deficit -= 1
+
+        for name in items:
+            selected[name] = pools[name][: taken[name]]
+            if len(pools[name]) < quotas[name] or taken[name] != quotas[name]:
+                shortages.append(
+                    {
+                        "kelas": kelas,
+                        "subkelas": subkelas,
+                        "jenis_barang": name,
+                        "kuota": quotas[name],
+                        "tersedia": len(pools[name]),
+                        "dipakai": taken[name],
+                        "kurang": max(quotas[name] - len(pools[name]), 0),
+                    }
+                )
+        used = sum(taken.values())
+        if used < target:
             shortages.append(
                 {
-                    "kelas": item.kelas,
-                    "subkelas": item.subkelas,
-                    "jenis_barang": item.jenis_barang,
-                    "kuota": item.kuota,
-                    "tersedia": len(pool),
-                    "kurang": item.kuota - len(pool),
+                    "kelas": kelas,
+                    "subkelas": subkelas,
+                    "jenis_barang": SUBCLASS_ROW,
+                    "kuota": target,
+                    "tersedia": sum(len(pools[name]) for name in items),
+                    "dipakai": used,
+                    "kurang": target - used,
                 }
             )
     return selected, shortages
@@ -271,6 +342,7 @@ def write_dataset(selected: dict[str, list[Candidate]], seed: int) -> list[dict]
 
     rng = random.Random(seed + 1)
     rows: list[dict] = []
+    progress = tqdm(total=sum(len(v) for v in selected.values()), desc="Salin ke data/classification")
     for item in TAXONOMY:
         pool = list(selected[item.jenis_barang])
         rng.shuffle(pool)
@@ -292,6 +364,7 @@ def write_dataset(selected: dict[str, list[Candidate]], seed: int) -> list[dict]
             target_dir.mkdir(parents=True, exist_ok=True)
             target = target_dir / f"{candidate.md5}{candidate.path.suffix.lower()}"
             shutil.copy2(candidate.path, target)
+            progress.update()
             rows.append(
                 {
                     "path": target.relative_to(PROJECT_ROOT).as_posix(),
@@ -306,12 +379,90 @@ def write_dataset(selected: dict[str, list[Candidate]], seed: int) -> list[dict]
                 }
             )
 
+    progress.close()
+    write_manifest(rows)
+    return rows
+
+
+def write_manifest(rows: list[dict]) -> None:
     MANIFEST_CSV.parent.mkdir(parents=True, exist_ok=True)
     with open(MANIFEST_CSV, "w", newline="", encoding="utf-8") as file:
-        writer = csv.DictWriter(file, fieldnames=MANIFEST_COLUMNS)
+        writer = csv.DictWriter(file, fieldnames=MANIFEST_COLUMNS, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(rows)
-    return rows
+
+
+AUGMENT_SOURCE = "augmentasi"
+AUGMENT_REPORT_COLUMNS = ["path", "kelas", "subkelas", "jenis_barang", "asal", "operasi"]
+
+
+def augment_to_target(rows: list[dict], target: int, seed: int) -> list[dict]:
+    """Tambah citra augmentasi ke split train hingga tiap subkelas berjumlah `target`.
+
+    Sumber hanya citra train subkelas yang sama (diutamakan jenis barang yang kurang dari
+    kuotanya), sehingga tidak ada informasi val/test yang masuk ke train.
+    """
+    quotas = scaled_quotas(target)
+    rng = random.Random(seed + 2)
+    output: list[dict] = []
+    for _, subkelas in SUBCLASSES:
+        members = [r for r in rows if r["subkelas"] == subkelas]
+        deficit = target - len(members)
+        if deficit <= 0:
+            continue
+        used = Counter(r["jenis_barang"] for r in members)
+        train = [r for r in members if r["split"] == "train"]
+        short = [r for r in train if used[r["jenis_barang"]] < quotas[r["jenis_barang"]]]
+        sources = sorted(short or train, key=lambda r: r["md5"])
+        if not sources:
+            continue
+        rng.shuffle(sources)
+        for k in tqdm(range(deficit), desc=f"Augmentasi {subkelas}"):
+            source = sources[k % len(sources)]
+            image = cv2.imdecode(
+                np.fromfile(PROJECT_ROOT / source["path"], dtype=np.uint8), cv2.IMREAD_COLOR
+            )
+            augmented, operations = random_augment(image, rng)
+            ok, buffer = cv2.imencode(".jpg", augmented, [cv2.IMWRITE_JPEG_QUALITY, 92])
+            if not ok:
+                raise ValueError(f"Gagal augmentasi {source['path']}")
+            target_path = (PROJECT_ROOT / source["path"]).parent / (
+                f"aug{k // len(sources) + 1}_{source['md5']}.jpg"
+            )
+            buffer.tofile(target_path)
+            output.append(
+                {
+                    **source,
+                    "path": target_path.relative_to(PROJECT_ROOT).as_posix(),
+                    "sumber": AUGMENT_SOURCE,
+                    "md5": hashlib.md5(buffer.tobytes()).hexdigest(),
+                    "asal": source["path"],
+                    "operasi": operations,
+                }
+            )
+    return output
+
+
+def random_augment(image: np.ndarray, rng: random.Random) -> tuple[np.ndarray, str]:
+    """Flip horizontal, rotasi +-25 derajat, crop 80-100%, kecerahan/kontras +-15%."""
+    operations = []
+    if rng.random() < 0.5:
+        image = cv2.flip(image, 1)
+        operations.append("flip")
+    height, width = image.shape[:2]
+    angle = rng.uniform(-25, 25)
+    matrix = cv2.getRotationMatrix2D((width / 2, height / 2), angle, 1.0)
+    image = cv2.warpAffine(image, matrix, (width, height), borderMode=cv2.BORDER_REFLECT_101)
+    operations.append(f"rotasi{angle:+.0f}")
+    scale = rng.uniform(0.8, 1.0)
+    crop_h, crop_w = int(height * scale), int(width * scale)
+    top, left = rng.randint(0, height - crop_h), rng.randint(0, width - crop_w)
+    image = image[top : top + crop_h, left : left + crop_w]
+    operations.append(f"crop{scale:.2f}")
+    alpha, beta = rng.uniform(0.85, 1.15), rng.uniform(-20, 20)
+    image = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
+    operations.append(f"kontras{alpha:.2f}_terang{beta:+.0f}")
+    return image, "+".join(operations)
 
 
 if __name__ == "__main__":
