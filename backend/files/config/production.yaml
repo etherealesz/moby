@@ -13,6 +13,7 @@ logging:
   level: info
 classification:
   device: auto
+  fullFrameFallback: true
   clahe:
     clipLimit: 2.0
     tileGridSize: [8, 8]
@@ -20,6 +21,7 @@ classification:
     weightsPath: models/detector/best.pt
     confidenceThreshold: 0.5
     imageSize: 640
+    cropPadding: 0.2
   classifier:
     weightsPath: models/classifier/best.pt
     imageSize: 224

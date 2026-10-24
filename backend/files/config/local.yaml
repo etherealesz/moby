@@ -7,12 +7,13 @@ database:
     host: localhost
     port: 5432
     user: postgres
-    password: "060905"
-    name: trashnav
+    password: 
+    name: 
 logging:
   level: debug
 classification:
   device: auto
+  fullFrameFallback: true
   clahe:
     clipLimit: 2.0
     tileGridSize: [8, 8]
@@ -20,6 +21,7 @@ classification:
     weightsPath: models/detector_runs/D4/weights/best.pt
     confidenceThreshold: 0.5
     imageSize: 640
+    cropPadding: 0.2
   classifier:
     weightsPath: models/classifier/K1/best.pt
     imageSize: 224
